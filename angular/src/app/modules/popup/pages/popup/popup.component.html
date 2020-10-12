@@ -1,17 +1,31 @@
 <h1>Popup</h1>
 <p>You can easily send messages from the popup to the content page with the provided Tab ID!
   (tabId=<strong>{{ tabId }}</strong>)</p>
-  <md-tab-group>
-    <md-tab label="Tab 1">Content 1</md-tab>
-    <md-tab label="Tab 2">Content 2</md-tab>
-    <md-tab label="Tab 2">Content 2</md-tab>
-    <md-tab label="Tab 2">Content 2</md-tab>
-    <md-tab label="Tab 2">Content 2</md-tab>
-    <md-tab label="Tab 2">Content 2</md-tab>
-    <md-tab label="Tab 2">Content 2</md-tab>
-    <md-tab label="Tab 2">Content 2</md-tab>
-    
-  </md-tab-group>
+  <mat-tab-group>
+    <mat-tab label="Set">
+      <mat-form-field class="example-form-field">
+        <mat-label>Clearable input</mat-label>
+        <input matInput type="text" [(ngModel)]="modelTargetSetDto.UrlAddress">
+        <button mat-button *ngIf="modelTargetSetDto.UrlAddress" matSuffix mat-icon-button aria-label="Clear" (click)="modelTargetSetDto.UrlAddress=''">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+      
+
+      <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
+      <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText"
+        name="captchaText" class="form-control mb-3" placeholder="محتوای عکس" />
+
+    </mat-tab>
+    <mat-tab label="Get">
+      
+
+    </mat-tab>
+    <mat-tab label="Info">
+      
+
+    </mat-tab>
+  </mat-tab-group>
 <button (click)="onClick()">Click me to test</button>
 
 <p><strong>{{ message }}</strong></p>
