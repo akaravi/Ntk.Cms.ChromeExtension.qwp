@@ -7,8 +7,7 @@
     "permissions": [
         "*://apicms.ir/*",
         "storage",
-        "webRequest",
-        "webRequestBlocking",
+        "tabs",
         "notifications"
     ],
     "browser_action": {

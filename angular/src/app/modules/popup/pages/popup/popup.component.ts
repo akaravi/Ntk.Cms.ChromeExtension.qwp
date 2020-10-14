@@ -4,10 +4,10 @@ import { bindCallback, Subscription } from "rxjs";
 import { catchError, map, retry, tap } from "rxjs/operators";
 import { CmsService } from "src/app/cmsService/cms.service";
 import { CaptchaModel } from "src/app/models/CaptchaModel";
-import { LinkManagementTargetShortLinkGetDtoModel } from 'src/app/models/LinkManagement/linkManagementTargetShortLinkGetDtoModel';
-import { LinkManagementTargetShortLinkGetResponceModel } from 'src/app/models/LinkManagement/linkManagementTargetShortLinkGetResponceModel';
-import { LinkManagementTargetShortLinkSetDtoModel } from 'src/app/models/LinkManagement/linkManagementTargetShortLinkSetDtoModel';
-import { LinkManagementTargetShortLinkSetResponceModel } from 'src/app/models/LinkManagement/linkManagementTargetShortLinkSetResponceModel';
+import { LinkManagementTargetShortLinkGetDtoModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkGetDtoModel";
+import { LinkManagementTargetShortLinkGetResponceModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkGetResponceModel";
+import { LinkManagementTargetShortLinkSetDtoModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkSetDtoModel";
+import { LinkManagementTargetShortLinkSetResponceModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkSetResponceModel";
 
 import { TAB_ID } from "../../../../providers/tab-id.provider";
 
@@ -23,6 +23,7 @@ export class PopupComponent implements OnInit {
     private http: HttpClient,
     private cmsService: CmsService
   ) {}
+  submitted = false;
   subManager = new Subscription();
   captchaModel: CaptchaModel = new CaptchaModel();
   modelTargetGetDto: LinkManagementTargetShortLinkGetDtoModel = new LinkManagementTargetShortLinkGetDtoModel();
@@ -32,6 +33,7 @@ export class PopupComponent implements OnInit {
 
   ngOnInit() {
     this.onCaptchaOrder();
+    this.SetCurrentUrl() ;
   }
   async onClick(): Promise<void> {
     this.message = await bindCallback<string>(
@@ -42,6 +44,25 @@ export class PopupComponent implements OnInit {
           chrome.runtime.lastError
             ? "The current page is protected by the browser, goto: https://www.google.nl and try again."
             : msg
+        )
+      )
+      .toPromise();
+  }
+  async SetCurrentUrl() {
+    // chrome.tabs.getCurrent(
+    //   function(tab) {
+    //     this.modelTargetSetDto.UrlAddress =  tab.url;
+    //   }
+    // );
+    return  await bindCallback<chrome.tabs.Tab>(
+      chrome.tabs.getCurrent.bind(this)
+    )()
+      .pipe(
+        map((tab) =>
+        this.modelTargetSetDto.UrlAddress =tab.url
+          // chrome.runtime.lastError
+          //   ? "The current page is protected by the browser, goto: https://www.google.nl and try again."
+          //   : tab.url
         )
       )
       .toPromise();
@@ -60,40 +81,34 @@ export class PopupComponent implements OnInit {
   }
 
   onSubmitSet() {
-    this.modelTargetSetResponce= new LinkManagementTargetShortLinkSetResponceModel();
-    this.modelTargetGetResponce= new LinkManagementTargetShortLinkGetResponceModel();
-
+    this.submitted = true;
+    this.modelTargetSetResponce = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
     this.modelTargetSetDto.CaptchaKey = this.captchaModel.Key;
-    this.message = "onSubmitSet";
- 
     this.subManager.add(
       this.cmsService.ServiceShortLinkSet(this.modelTargetSetDto).subscribe(
         (next) => {
           if (next.IsSuccess) {
-            this.modelTargetSetResponce=next.Item;
+            this.modelTargetSetResponce = next.Item;
           }
         },
-        (error) => {
-          
-        }
+        (error) => {}
       )
     );
   }
   onSubmitGet() {
-    this.modelTargetSetResponce= new LinkManagementTargetShortLinkSetResponceModel();
-    this.modelTargetGetResponce= new LinkManagementTargetShortLinkGetResponceModel();
+    this.submitted = true;
+    this.modelTargetSetResponce = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
     this.modelTargetGetDto.CaptchaKey = this.captchaModel.Key;
-    this.message = "onSubmitGet";
     this.subManager.add(
       this.cmsService.ServiceShortLinkGet(this.modelTargetGetDto).subscribe(
         (next) => {
           if (next.IsSuccess) {
-            this.modelTargetGetResponce=next.Item;
+            this.modelTargetGetResponce = next.Item;
           }
         },
-        (error) => {
-
-        }
+        (error) => {}
       )
     );
   }

@@ -6,7 +6,5 @@ export class LinkManagementTargetShortLinkGetResponceModel  {
      UrlAddress: string;
      ShareExpireDate: Date;
      ShortLinkUrl: string;
-     
-     
-   
+     ShortLinkQRCodeBase64: string;
 }
