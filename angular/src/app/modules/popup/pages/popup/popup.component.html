@@ -1,31 +1,126 @@
-<h1>Popup</h1>
 <p>You can easily send messages from the popup to the content page with the provided Tab ID!
-  (tabId=<strong>{{ tabId }}</strong>)</p>
-  <mat-tab-group>
+    (tabId=<strong>{{ tabId }}</strong>)</p>
+
+<mat-tab-group>
     <mat-tab label="Set">
-      <mat-form-field class="example-form-field">
-        <mat-label>Clearable input</mat-label>
-        <input matInput type="text" [(ngModel)]="modelTargetSetDto.UrlAddress">
-        <button mat-button *ngIf="modelTargetSetDto.UrlAddress" matSuffix mat-icon-button aria-label="Clear" (click)="modelTargetSetDto.UrlAddress=''">
-          <mat-icon>close</mat-icon>
-        </button>
-      </mat-form-field>
-      
 
-      <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
-      <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText"
-        name="captchaText" class="form-control mb-3" placeholder="محتوای عکس" />
+        <!--Registration Page Starts-->
+        <section id="shortLinkSet">
+            <div class="container-fluid">
+                <div class="row full-height-vh m-0">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <form #registerForm="ngForm" (ngSubmit)="onSubmitSet()" aria-labelledby="title">
+                            <div class="card">
+                                <div class="card-content">
+                                    <div class="card-body register-img">
+                                        <div class="row m-0">
+                                            <div class="col-lg-6 d-none d-lg-block py-2 px-3 text-center">
+                                                <img src="../../assets/images/set.png" alt="" class="img-fluid mt-3 pl-3" width="40" height="40" />
+                                            </div>
+                                            <div class="col-lg-6 col-md-12 pt-3 px-4 bg-white">
 
+
+                                                <h4 class="card-title mb-2">Set Short Link</h4>
+                                                <p class="card-text mb-3">
+                                                    You Can Make Short Link qwp.ir
+                                                </p>
+                                                <input [(ngModel)]="modelTargetSetDto.UrlAddress" name="UrlAddress" type="text" class="form-control mb-3" placeholder="Url Address" />
+                                                <input [(ngModel)]="modelTargetSetDto.Description" name="Description" type="text" class="form-control mb-3" placeholder="Description" />
+                                                <input [(ngModel)]="modelTargetSetDto.UploadFileKey" name="UploadFileKey" type="text" class="form-control mb-3" placeholder="UploadFileKey" />
+                                                <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
+                                                <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText" autocomplete="false" class="form-control mb-3" placeholder="Captcha Text" />
+
+                                                <div class="fg-actions d-flex justify-content-between">
+
+                                                    <div class="recover-pass">
+                                                        <button type="submit" class="btn btn-primary">
+                                                            <a class="text-decoration-none text-white">
+                                                                Set
+                                                            </a>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--Registration Page Ends-->
     </mat-tab>
     <mat-tab label="Get">
-      
+
+        <!--Registration Page Starts-->
+        <section id="shortLinkGet">
+            <div class="container-fluid">
+                <div class="row full-height-vh m-0">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <form #registerForm="ngForm" (ngSubmit)="onSubmitGet()" aria-labelledby="title">
+                            <div class="card">
+                                <div class="card-content">
+                                    <div class="card-body register-img">
+                                        <div class="row m-0">
+                                            <div class="col-lg-6 d-none d-lg-block py-2 px-3 text-center">
+                                                <img src="../../assets/images/set.png" alt="" class="img-fluid mt-3 pl-3" width="40" height="40" />
+                                            </div>
+                                            <div class="col-lg-6 col-md-12 pt-3 px-4 bg-white">
+
+
+                                                <h4 class="card-title mb-2">Get Short Link</h4>
+                                                <p class="card-text mb-3">
+                                                    You Can Get Short Link qwp.ir
+                                                </p>
+                                                <input [(ngModel)]="modelTargetGetDto.Id" name="Id" type="text" class="form-control mb-3" placeholder="ID" />
+                                                <input [(ngModel)]="modelTargetGetDto.Key" name="Key" type="text" class="form-control mb-3" placeholder="Key" />
+                                                <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
+                                                <input [(ngModel)]="modelTargetGetDto.CaptchaText" type="captchaText" name="captchaText" autocomplete="false" class="form-control mb-3" placeholder="Captcha Text" />
+
+                                                <div class="fg-actions d-flex justify-content-between">
+
+                                                    <div class="recover-pass">
+                                                        <button type="submit" class="btn btn-primary">
+                                                            <a class="text-decoration-none text-white">
+                                                                Get
+                                                            </a>
+                                                        </button>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!--Registration Page Ends-->
 
     </mat-tab>
     <mat-tab label="Info">
-      
+
 
     </mat-tab>
-  </mat-tab-group>
+</mat-tab-group>
 <button (click)="onClick()">Click me to test</button>
-
+modelTargetSetDto:
+{{modelTargetSetDto | json}}
+<br />
+modelTargetGetDto:
+{{modelTargetGetDto | json}}
+<br />
+modelTargetSetResponce:
+{{modelTargetSetResponce | json}}
+<br>
+modelTargetGetResponce:
+{{modelTargetGetResponce | json}}
 <p><strong>{{ message }}</strong></p>

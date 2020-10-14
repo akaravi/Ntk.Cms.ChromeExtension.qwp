@@ -3,7 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  configApiServerPath: 'https://apicms.ir/api/v1/',
+  configApiRetry:1
 };
 
 /*

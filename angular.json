@@ -25,7 +25,8 @@
             "tsConfig": "angular/src/tsconfig.app.json",
             "assets": [
               "angular/src/manifest.json",
-              "angular/src/assets"
+              "angular/src/assets",
+              "angular/src/favicon.ico"
             ],
             "styles": [
               "./node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css",

@@ -18,3 +18,4 @@ chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
     .bootstrapModule(AppModule)
     .catch(error => console.error(error));
 });
+

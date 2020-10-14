@@ -1,13 +1,14 @@
-import { HttpClient } from "@angular/common/http";
-import { Component, Inject } from "@angular/core";
-import { bindCallback } from "rxjs";
-import { map } from "rxjs/operators";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { Component, Inject, OnInit } from "@angular/core";
+import { bindCallback, Subscription } from "rxjs";
+import { catchError, map, retry, tap } from "rxjs/operators";
+import { CmsService } from "src/app/cmsService/cms.service";
 import { CaptchaModel } from "src/app/models/CaptchaModel";
-import { ErrorExcptionResult } from "src/app/models/errorExcptionResult";
-import { TargetGetDto } from "src/app/models/TargetGetDto";
-import { TargetGetResponce } from "src/app/models/TargetGetResponce";
-import { TargetSetDto } from "src/app/models/targetSetDto";
-import { TargetSetResponce } from "src/app/models/targetSetResponce";
+import { LinkManagementTargetShortLinkGetDtoModel } from 'src/app/models/LinkManagement/linkManagementTargetShortLinkGetDtoModel';
+import { LinkManagementTargetShortLinkGetResponceModel } from 'src/app/models/LinkManagement/linkManagementTargetShortLinkGetResponceModel';
+import { LinkManagementTargetShortLinkSetDtoModel } from 'src/app/models/LinkManagement/linkManagementTargetShortLinkSetDtoModel';
+import { LinkManagementTargetShortLinkSetResponceModel } from 'src/app/models/LinkManagement/linkManagementTargetShortLinkSetResponceModel';
+
 import { TAB_ID } from "../../../../providers/tab-id.provider";
 
 @Component({
@@ -15,21 +16,19 @@ import { TAB_ID } from "../../../../providers/tab-id.provider";
   templateUrl: "popup.component.html",
   styleUrls: ["popup.component.scss"],
 })
-export class PopupComponent {
+export class PopupComponent implements OnInit {
   message: string;
-
   constructor(
+    @Inject(TAB_ID) readonly tabId: number,
     private http: HttpClient,
-    //private alertService: ToastrService,
-
-    @Inject(TAB_ID) readonly tabId: number
+    private cmsService: CmsService
   ) {}
+  subManager = new Subscription();
   captchaModel: CaptchaModel = new CaptchaModel();
-  baseUrl = "https://apicms.ir/api/v1/";
-  modelTargetGetDto: TargetGetDto = new TargetGetDto();
-  modelTargetGetResponce: TargetGetResponce = new TargetGetResponce();
-  modelTargetSetDto: TargetSetDto = new TargetSetDto();
-  modelTargetSetResponce: TargetSetResponce = new TargetSetResponce();
+  modelTargetGetDto: LinkManagementTargetShortLinkGetDtoModel = new LinkManagementTargetShortLinkGetDtoModel();
+  modelTargetGetResponce: LinkManagementTargetShortLinkGetResponceModel = new LinkManagementTargetShortLinkGetResponceModel();
+  modelTargetSetDto: LinkManagementTargetShortLinkSetDtoModel = new LinkManagementTargetShortLinkSetDtoModel();
+  modelTargetSetResponce: LinkManagementTargetShortLinkSetResponceModel = new LinkManagementTargetShortLinkSetResponceModel();
 
   ngOnInit() {
     this.onCaptchaOrder();
@@ -48,74 +47,54 @@ export class PopupComponent {
       .toPromise();
   }
   onCaptchaOrder() {
-    this.http.get(this.baseUrl + "captcha").pipe(
-      map((ret: ErrorExcptionResult<CaptchaModel>) => {
-        if (ret) {
-          if (ret.IsSuccess) {
-            this.captchaModel = ret.Item;
-          } else {
-            //this.alertService.error(ret.ErrorMessage, "خطا در دریافت  کلید عکس کپتچا");
-          }
-          return ret;
+    this.subManager.add(
+      this.cmsService.ServiceCaptcha().subscribe(
+        (next) => {
+          this.captchaModel = next.Item;
+        },
+        (error) => {
+          this.message = "خطا در دریافت عکس کپچا";
         }
-      })
+      )
     );
-    // this.subManager.add(
-    //   this.cmsAuthService.ServiceCaptcha().subscribe(
-    //     (next) => {
-    //       this.captchaModel = next.Item;
-    //     },
-    //     (error) => {
-    //       this.alertService.error(
-    //         this.publicHelper.CheckError(error),
-    //         "خطا در دریافت عکس کپچا"
-    //       );
-    //     }
-    //   )
-    // );
   }
+
   onSubmitSet() {
+    this.modelTargetSetResponce= new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetGetResponce= new LinkManagementTargetShortLinkGetResponceModel();
+
     this.modelTargetSetDto.CaptchaKey = this.captchaModel.Key;
-    // this.subManager.add(
-    //   this.cmsAuthService.ServiceForgetPassword(this.model).subscribe(
-    //     (next) => {
-    //       if (next.IsSuccess) {
-    //         this.store.dispatch(new fromStore.InitHub());
-    //         if (this.returnUrl === null || this.returnUrl === undefined) {
-    //           this.returnUrl = this.cmsAuthService.getLoginUrl();
-    //         }
-    //         this.router.navigate([this.returnUrl]);
-    //       }
-    //     },
-    //     (error) => {
-    //       this.alertService.error(
-    //         this.publicHelper.CheckError(error),
-    //         'خطا در بازیابی پسورد'
-    //       );
-    //     }
-    //   )
-    // );
+    this.message = "onSubmitSet";
+ 
+    this.subManager.add(
+      this.cmsService.ServiceShortLinkSet(this.modelTargetSetDto).subscribe(
+        (next) => {
+          if (next.IsSuccess) {
+            this.modelTargetSetResponce=next.Item;
+          }
+        },
+        (error) => {
+          
+        }
+      )
+    );
   }
   onSubmitGet() {
+    this.modelTargetSetResponce= new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetGetResponce= new LinkManagementTargetShortLinkGetResponceModel();
     this.modelTargetGetDto.CaptchaKey = this.captchaModel.Key;
-    // this.subManager.add(
-    //   this.cmsAuthService.ServiceForgetPassword(this.model).subscribe(
-    //     (next) => {
-    //       if (next.IsSuccess) {
-    //         this.store.dispatch(new fromStore.InitHub());
-    //         if (this.returnUrl === null || this.returnUrl === undefined) {
-    //           this.returnUrl = this.cmsAuthService.getLoginUrl();
-    //         }
-    //         this.router.navigate([this.returnUrl]);
-    //       }
-    //     },
-    //     (error) => {
-    //       this.alertService.error(
-    //         this.publicHelper.CheckError(error),
-    //         'خطا در بازیابی پسورد'
-    //       );
-    //     }
-    //   )
-    // );
+    this.message = "onSubmitGet";
+    this.subManager.add(
+      this.cmsService.ServiceShortLinkGet(this.modelTargetGetDto).subscribe(
+        (next) => {
+          if (next.IsSuccess) {
+            this.modelTargetGetResponce=next.Item;
+          }
+        },
+        (error) => {
+
+        }
+      )
+    );
   }
 }
