@@ -79,7 +79,34 @@ export class PopupComponent implements OnInit {
       )
     );
   }
+  onSubmitGet() {
+    this.submitted = true;
+    this.modelTargetSetResponce = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
+    this.modelTargetGetDto.CaptchaKey = this.captchaModel.Key;
+    var res = this.modelTargetGetDto.IdAndKey.split("@");
+    if(res.length<2)
+    {
+      this.message = "Key Is Worng.";
 
+    }
+    this.modelTargetGetDto.Id=res[0];
+    this.modelTargetGetDto.Key=res[1];
+    this.subManager.add(
+      this.cmsService.ServiceShortLinkGet(this.modelTargetGetDto).subscribe(
+        (next) => {
+          if (next.IsSuccess) {
+            this.modelTargetGetResponce = next.Item;
+            console.log("modelTargetGetResponce IsSuccess"+this.modelTargetGetResponce)
+          }
+        },
+        (error) => {
+
+          console.log("modelTargetGetResponce"+this.modelTargetGetResponce)
+        }
+      )
+    );
+  }
   onSubmitSet() {
     this.submitted = true;
     this.modelTargetSetResponce = new LinkManagementTargetShortLinkSetResponceModel();
@@ -96,20 +123,58 @@ export class PopupComponent implements OnInit {
       )
     );
   }
-  onSubmitGet() {
+  
+  onSubmitSetDescription() {
     this.submitted = true;
     this.modelTargetSetResponce = new LinkManagementTargetShortLinkSetResponceModel();
     this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
-    this.modelTargetGetDto.CaptchaKey = this.captchaModel.Key;
+    this.modelTargetSetDto.CaptchaKey = this.captchaModel.Key;
+    this.modelTargetSetDto.UrlAddress ="";
+    this.modelTargetSetDto.UploadFileKey ="";
     this.subManager.add(
-      this.cmsService.ServiceShortLinkGet(this.modelTargetGetDto).subscribe(
+      this.cmsService.ServiceShortLinkSet(this.modelTargetSetDto).subscribe(
         (next) => {
           if (next.IsSuccess) {
-            this.modelTargetGetResponce = next.Item;
+            this.modelTargetSetResponce = next.Item;
           }
         },
         (error) => {}
       )
     );
+  }
+  selectedUserTab = 1;
+   tabs = [
+     {
+       name: '<b style="color: deepskyblue">Get</b> <i style="color: deeppink">Link</i>',
+       key: 1,
+       active: true
+     },
+      {
+      name: '<b style="color: deepskyblue">Set</b> <i style="color: deeppink">Link</i>',
+      key: 2,
+      active: false
+    },
+    {
+      name: '<b style="color: deepskyblue">Set</b> <i style="color: deeppink">File</i>',
+      key: 3,
+      active: false
+    },
+    {
+      name: '<b style="color: deepskyblue">Set</b> <i style="color: deeppink">Memo</i>',
+      key: 4,
+      active: false
+    }
+   ];
+
+tabChange(selectedTab) {
+    console.log('### tab change');
+    this.selectedUserTab = selectedTab.key;
+    for (let tab of this.tabs) {
+        if (tab.key === selectedTab.key) {
+          tab.active = true;
+        } else {
+          tab.active = false;
+        }
+    }
   }
 }

@@ -3,7 +3,7 @@ import { NgModule } from "@angular/core";
 import { PopupComponent } from "./pages/popup/popup.component";
 import { PopupRoutingModule } from "./popup-routing.module";
 import { FormsModule } from "@angular/forms";
-import { TabsModule } from 'ngx-bootstrap/tabs';
+//import { TabsModule } from 'ngx-bootstrap/tabs';
 
 @NgModule({
   declarations: [PopupComponent],
@@ -11,7 +11,7 @@ import { TabsModule } from 'ngx-bootstrap/tabs';
     CommonModule,
     PopupRoutingModule,
     FormsModule,
-    TabsModule
+  //  TabsModule
   ],
 })
 export class PopupModule {}
