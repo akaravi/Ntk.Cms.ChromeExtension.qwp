@@ -1,6 +1,6 @@
 
 export class LinkManagementTargetShortLinkGetResponceModel  {
-     Id: number;
+     Key: string;
      FilesSrc: string[];
      Description: string;
      UrlAddress: string;

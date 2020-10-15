@@ -22,18 +22,49 @@ export class PopupComponent implements OnInit {
     @Inject(TAB_ID) readonly tabId: number,
     private http: HttpClient,
     private cmsService: CmsService
-  ) {}
+  ) {
+    this.progress = 0;
+  }
   submitted = false;
   subManager = new Subscription();
   captchaModel: CaptchaModel = new CaptchaModel();
   modelTargetGetDto: LinkManagementTargetShortLinkGetDtoModel = new LinkManagementTargetShortLinkGetDtoModel();
   modelTargetGetResponce: LinkManagementTargetShortLinkGetResponceModel = new LinkManagementTargetShortLinkGetResponceModel();
   modelTargetSetDto: LinkManagementTargetShortLinkSetDtoModel = new LinkManagementTargetShortLinkSetDtoModel();
-  modelTargetSetResponce: LinkManagementTargetShortLinkSetResponceModel = new LinkManagementTargetShortLinkSetResponceModel();
 
+  modelTargetSetResponce: LinkManagementTargetShortLinkSetResponceModel = new LinkManagementTargetShortLinkSetResponceModel();
+  fileToUpload: File = null;
+  selectedUserTab = 1;
+  progress: number;
+  tabs = [
+    {
+      name:
+        '<b style="color: deepskyblue">Get</b> <i style="color: deeppink">Link</i>',
+      key: 1,
+      active: true,
+    },
+    {
+      name:
+        '<b style="color: deepskyblue">Set</b> <i style="color: deeppink">Link</i>',
+      key: 2,
+      active: false,
+    },
+    {
+      name:
+        '<b style="color: deepskyblue">Set</b> <i style="color: deeppink">File</i>',
+      key: 3,
+      active: false,
+    },
+    {
+      name:
+        '<b style="color: deepskyblue">Set</b> <i style="color: deeppink">Memo</i>',
+      key: 4,
+      active: false,
+    },
+  ];
   ngOnInit() {
     this.onCaptchaOrder();
-    this.SetCurrentUrl() ;
+    this.SetCurrentUrl();
   }
   async onClick(): Promise<void> {
     this.message = await bindCallback<string>(
@@ -54,12 +85,12 @@ export class PopupComponent implements OnInit {
     //     this.modelTargetSetDto.UrlAddress =  tab.url;
     //   }
     // );
-    return  await bindCallback<chrome.tabs.Tab>(
+    return await bindCallback<chrome.tabs.Tab>(
       chrome.tabs.getCurrent.bind(this)
     )()
       .pipe(
-        map((tab) =>
-        this.modelTargetSetDto.UrlAddress =tab.url
+        map(
+          (tab) => (this.modelTargetSetDto.UrlAddress = tab.url)
           // chrome.runtime.lastError
           //   ? "The current page is protected by the browser, goto: https://www.google.nl and try again."
           //   : tab.url
@@ -84,30 +115,27 @@ export class PopupComponent implements OnInit {
     this.modelTargetSetResponce = new LinkManagementTargetShortLinkSetResponceModel();
     this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
     this.modelTargetGetDto.CaptchaKey = this.captchaModel.Key;
-    var res = this.modelTargetGetDto.IdAndKey.split("@");
-    if(res.length<2)
-    {
+    var res = this.modelTargetGetDto.Key.split("@");
+    if (res.length < 2) {
       this.message = "Key Is Worng.";
-
     }
-    this.modelTargetGetDto.Id=res[0];
-    this.modelTargetGetDto.Key=res[1];
     this.subManager.add(
       this.cmsService.ServiceShortLinkGet(this.modelTargetGetDto).subscribe(
         (next) => {
           if (next.IsSuccess) {
             this.modelTargetGetResponce = next.Item;
-            console.log("modelTargetGetResponce IsSuccess"+this.modelTargetGetResponce)
+            console.log(
+              "modelTargetGetResponce IsSuccess" + this.modelTargetGetResponce
+            );
           }
         },
         (error) => {
-
-          console.log("modelTargetGetResponce"+this.modelTargetGetResponce)
+          console.log("modelTargetGetResponce" + this.modelTargetGetResponce);
         }
       )
     );
   }
-  onSubmitSet() {
+  onSubmitSetLink() {
     this.submitted = true;
     this.modelTargetSetResponce = new LinkManagementTargetShortLinkSetResponceModel();
     this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
@@ -123,14 +151,14 @@ export class PopupComponent implements OnInit {
       )
     );
   }
-  
+
   onSubmitSetDescription() {
     this.submitted = true;
     this.modelTargetSetResponce = new LinkManagementTargetShortLinkSetResponceModel();
     this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
     this.modelTargetSetDto.CaptchaKey = this.captchaModel.Key;
-    this.modelTargetSetDto.UrlAddress ="";
-    this.modelTargetSetDto.UploadFileKey ="";
+    this.modelTargetSetDto.UrlAddress = "";
+    this.modelTargetSetDto.UploadFileKey = "";
     this.subManager.add(
       this.cmsService.ServiceShortLinkSet(this.modelTargetSetDto).subscribe(
         (next) => {
@@ -142,39 +170,51 @@ export class PopupComponent implements OnInit {
       )
     );
   }
-  selectedUserTab = 1;
-   tabs = [
-     {
-       name: '<b style="color: deepskyblue">Get</b> <i style="color: deeppink">Link</i>',
-       key: 1,
-       active: true
-     },
-      {
-      name: '<b style="color: deepskyblue">Set</b> <i style="color: deeppink">Link</i>',
-      key: 2,
-      active: false
-    },
-    {
-      name: '<b style="color: deepskyblue">Set</b> <i style="color: deeppink">File</i>',
-      key: 3,
-      active: false
-    },
-    {
-      name: '<b style="color: deepskyblue">Set</b> <i style="color: deeppink">Memo</i>',
-      key: 4,
-      active: false
-    }
-   ];
 
-tabChange(selectedTab) {
-    console.log('### tab change');
+  onSubmitSetFile() {
+    this.submitted = true;
+    this.modelTargetSetResponce = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
+    this.modelTargetSetDto.CaptchaKey = this.captchaModel.Key;
+    this.modelTargetSetDto.UrlAddress = "";
+    this.modelTargetSetDto.UploadFileKey = "";
+    this.subManager.add(
+      this.cmsService.ServiceShortLinkSet(this.modelTargetSetDto).subscribe(
+        (next) => {
+          if (next.IsSuccess) {
+            this.modelTargetSetResponce = next.Item;
+          }
+        },
+        (error) => {}
+      )
+    );
+  }
+  handleProgress(progress) {
+    this.progress = progress;
+  }
+  handleFileInput(files: FileList) {
+    this.fileToUpload = files.item(0);
+
+    this.subManager.add(
+      this.cmsService
+        .ServiceUploadFile(this.fileToUpload, (x) => this.handleProgress(x))
+        .subscribe(
+          (next) => {
+            this.modelTargetSetDto.UploadFileKey = next + "";
+          },
+          (error) => {}
+        )
+    );
+  }
+  tabChange(selectedTab) {
+    console.log("### tab change");
     this.selectedUserTab = selectedTab.key;
     for (let tab of this.tabs) {
-        if (tab.key === selectedTab.key) {
-          tab.active = true;
-        } else {
-          tab.active = false;
-        }
+      if (tab.key === selectedTab.key) {
+        tab.active = true;
+      } else {
+        tab.active = false;
+      }
     }
   }
 }
