@@ -194,10 +194,12 @@ export class PopupComponent implements OnInit {
   }
   handleFileInput(files: FileList) {
     this.fileToUpload = files.item(0);
+  // this.cmsService
+  //        .ServiceUploadFile(this.fileToUpload, (x) => this.handleProgress(x))
 
     this.subManager.add(
       this.cmsService
-        .ServiceUploadFile(this.fileToUpload, (x) => this.handleProgress(x))
+        .ServiceUploadFileNormal(this.fileToUpload,this.fileToUpload.name, (x) => this.handleProgress(x))
         .subscribe(
           (next) => {
             this.modelTargetSetDto.UploadFileKey = next + "";

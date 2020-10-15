@@ -1,8 +1,8 @@
 
 
 export class FileUploadChunkDtoModel  {
-     ChunkNumber: number;
-     TotalChunks: number;
-     Identifier: string;
-     FileName: string;
+     ChunkNumber: number=1;
+     TotalChunks: number=1;
+     Identifier: string="";
+     FileName: string="";
 }
