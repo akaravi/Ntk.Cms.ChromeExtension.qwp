@@ -76,12 +76,19 @@ export class PopupComponent implements OnInit {
 
       url: URL, 
       itemAlias: 'file',
+      
      });
      this.uploader.onBuildItemForm = (fileItem: any, form: any) => {
        console.log(fileItem)
       form.append('filename', fileItem.file.name);
-  };
+      this.uploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
 
+        console.log("ImageUpload:item:", item);
+        console.log("ImageUpload:status:",  status);
+        console.log("ImageUpload:response:",response);
+    };
+  };
+  
     // this.uploader = new FileUploader({
     //   url: URL,
     //   disableMultipart: true, // 'DisableMultipart' must be 'true' for formatDataFunction to be called.
