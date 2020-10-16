@@ -6,12 +6,14 @@ import { AppComponent } from "./app.component";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 import { HttpClientModule, HttpClient } from "@angular/common/http";
 import { CmsService } from './cmsService/cms.service';
+import { FileUploadModule } from 'ng2-file-upload';
 
 
 @NgModule({
   declarations: [AppComponent],
   imports: [
     BrowserModule,
+    FileUploadModule,
     FormsModule,
     AppRoutingModule,
     BrowserAnimationsModule,

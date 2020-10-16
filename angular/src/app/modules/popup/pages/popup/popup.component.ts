@@ -1,5 +1,6 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { Component, Inject, OnInit } from "@angular/core";
+import { Component, Directive, Inject, OnInit } from "@angular/core";
+import { FileUploader } from 'ng2-file-upload';
 import { bindCallback, Subscription } from "rxjs";
 import { catchError, map, retry, tap } from "rxjs/operators";
 import { CmsService } from "src/app/cmsService/cms.service";
@@ -10,13 +11,19 @@ import { LinkManagementTargetShortLinkSetDtoModel } from "src/app/models/LinkMan
 import { LinkManagementTargetShortLinkSetResponceModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkSetResponceModel";
 
 import { TAB_ID } from "../../../../providers/tab-id.provider";
+const URL =  "http://localhost:2390/api/v1/FileContent/Upload/";;
+//const URL =  "https://apicms.ir/api/v1/FileContent/Upload/";;
 
 @Component({
   selector: "app-popup",
   templateUrl: "popup.component.html",
   styleUrls: ["popup.component.scss"],
 })
+// class FileSelectDirective
+
 export class PopupComponent implements OnInit {
+  //public uploader: FileUploader = new FileUploader({ url: URL, itemAlias: 'photo' });
+
   message: string;
   constructor(
     @Inject(TAB_ID) readonly tabId: number,
@@ -65,6 +72,42 @@ export class PopupComponent implements OnInit {
   ngOnInit() {
     this.onCaptchaOrder();
     this.SetCurrentUrl();
+    this. uploader= new FileUploader({ 
+
+      url: URL, 
+      itemAlias: 'file',
+     });
+     this.uploader.onBuildItemForm = (fileItem: any, form: any) => {
+       console.log(fileItem)
+      form.append('filename', fileItem.file.name);
+  };
+
+    // this.uploader = new FileUploader({
+    //   url: URL,
+    //   disableMultipart: true, // 'DisableMultipart' must be 'true' for formatDataFunction to be called.
+    //   formatDataFunctionIsAsync: true,
+    //   method:"post",
+
+    //   formatDataFunction: async (item) => {
+    //     console.log(item);
+    //     return new Promise( (resolve, reject) => {
+    //       resolve({
+    //         // fileName: item._file.name,
+    //         // name: item._file.name,
+    //         // length: item._file.size,
+    //         //contentType: item._file.type,
+    //         //date: new Date()
+    //       });
+    //     });
+    //   }
+    // });
+ 
+    this.hasBaseDropZoneOver = false;
+    this.hasAnotherDropZoneOver = false;
+ 
+    this.response = '';
+ 
+    this.uploader.response.subscribe( res => this.response = res );
   }
   async onClick(): Promise<void> {
     this.message = await bindCallback<string>(
@@ -151,7 +194,6 @@ export class PopupComponent implements OnInit {
       )
     );
   }
-
   onSubmitSetDescription() {
     this.submitted = true;
     this.modelTargetSetResponce = new LinkManagementTargetShortLinkSetResponceModel();
@@ -170,7 +212,6 @@ export class PopupComponent implements OnInit {
       )
     );
   }
-
   onSubmitSetFile() {
     this.submitted = true;
     this.modelTargetSetResponce = new LinkManagementTargetShortLinkSetResponceModel();
@@ -218,5 +259,17 @@ export class PopupComponent implements OnInit {
         tab.active = false;
       }
     }
+  }
+
+  uploader:FileUploader;
+  hasBaseDropZoneOver:boolean;
+  hasAnotherDropZoneOver:boolean;
+  response:string;
+  public fileOverBase(e:any):void {
+    this.hasBaseDropZoneOver = e;
+  }
+ 
+  public fileOverAnother(e:any):void {
+    this.hasAnotherDropZoneOver = e;
   }
 }
