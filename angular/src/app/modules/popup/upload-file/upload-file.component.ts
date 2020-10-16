@@ -4,31 +4,33 @@ import {
   AfterViewInit,
   ViewChild,
   ChangeDetectorRef,
+  ChangeDetectionStrategy,
 } from "@angular/core";
 import { FlowDirective, Transfer } from "@flowjs/ngx-flow";
 import { Subscription } from "rxjs";
-
+const URL = "http://localhost:2390/api/v1/FileContent/Upload/";
 @Component({
   selector: "app-upload-file",
   templateUrl: "./upload-file.component.html",
   styleUrls: ["./upload-file.component.scss"],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UploadFileComponent implements AfterViewInit, OnInit {
   constructor(private cd: ChangeDetectorRef) {}
   @ViewChild("flow", { static: false })
   flow: FlowDirective;
   autoUploadSubscription: Subscription;
-
+  flowOption: flowjs.FlowOptions;
+  uploadViewImage=false;
   ngOnInit() {
     this.flowOption = {
-      target: "http://localhost:2390/api/v1/FileContent/Upload/",
+      target: URL,
       query: function (flowFile, flowChunk) {
-        // if (flowFile.myparams) {
-        //   return flowFile.myparams;
-        // }
+        if (flowFile.myparams) {
+          return flowFile.myparams;
+        }
         // generate some values
-        console.log("flowFile", flowFile);
-        console.log("flowChunk", flowChunk);
+
         flowFile.myparams = {
           ChunkNumber: flowChunk.offset + 1,
           ChunkSize: flowChunk.flowObj.opts.chunkSize,
@@ -41,26 +43,28 @@ export class UploadFileComponent implements AfterViewInit, OnInit {
         };
         return flowFile.myparams;
       },
-      // flowChunkNumber: this.offset + 1,
-      // flowChunkSize: this.flowObj.opts.chunkSize,
-      // flowCurrentChunkSize: this.endByte - this.startByte,
-      // flowTotalSize: this.fileObj.size,
-      // flowIdentifier: this.fileObj.uniqueIdentifier,
-      // flowFilename: this.fileObj.name,
-      // flowRelativePath: this.fileObj.relativePath,
-      // flowTotalChunks: this.fileObj.chunks.length
+      allowDuplicateUploads: false,
     };
   }
-  flowOption: flowjs.FlowOptions;
+
   ngAfterViewInit() {
     this.autoUploadSubscription = this.flow.events$.subscribe((event) => {
       switch (event.type) {
         case "filesSubmitted":
           return this.flow.upload();
+        case "fileSuccess":
+          return this.fileSuccess(event);
         case "newFlowJsInstance":
-          this.cd.detectChanges();
+          return this.cd.detectChanges();
       }
     });
+  }
+  fileSuccess(event: any) {
+    console.log("event", event);
+    if (event && event.event) {
+      console.log("name", event.event[0].name);
+      console.log("responce", event.event[1]);
+    }
   }
   trackTransfer(transfer: Transfer) {
     return transfer.id;

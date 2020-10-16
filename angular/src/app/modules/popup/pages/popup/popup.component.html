@@ -1,268 +1,166 @@
-<div class="row">
- <app-upload-file  ></app-upload-file> 
-
-    <br />
-    <br />
-    <style>
-        .my-drop-zone {
-            border: dotted 3px lightgray;
-        }
-
-        .nv-file-over {
-            border: dotted 3px red;
-        }
-
-        /* Default class applied to drop zones on over */
-        .another-file-over-class {
-            border: dotted 3px green;
-        }
-
-        html,
-        body {
-            height: 100%;
-        }
-    </style>
-
-    <div class="container">
-
-        <div class="navbar navbar-default">
-            <div class="navbar-header">
-                <a class="navbar-brand" href>Angular2 File Upload</a>
-            </div>
-        </div>
-
-        <div class="row">
-
-            <div class="col-md-3">
-
-                <h3>Select files</h3>
-
-                <div ng2FileDrop [ngClass]="{'nv-file-over': hasBaseDropZoneOver}" (fileOver)="fileOverBase($event)" [uploader]="uploader" class="well my-drop-zone">
-                    Base drop zone
-                </div>
-
-                <div ng2FileDrop [ngClass]="{'another-file-over-class': hasAnotherDropZoneOver}" (fileOver)="fileOverAnother($event)" [uploader]="uploader" class="well my-drop-zone">
-                    Another drop zone
-                </div>
-
-                Multiple
-                <input type="file" ng2FileSelect [uploader]="uploader" multiple /><br />
-
-                Single
-                <input type="file" ng2FileSelect [uploader]="uploader" />
-            </div>
-
-            <div class="col-md-9" style="margin-bottom: 40px">
-
-                <h3>Upload queue</h3>
-                <p>Queue length: {{ uploader?.queue?.length }}</p>
-
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th width="50%">Name</th>
-                            <th>Size</th>
-                            <th>Progress</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let item of uploader.queue">
-                            <td><strong>{{ item?.file?.name }}</strong></td>
-                            <td *ngIf="uploader.options.isHTML5" nowrap>{{ item?.file?.size/1024/1024 | number:'.2' }} MB</td>
-                            <td *ngIf="uploader.options.isHTML5">
-                                <div class="progress" style="margin-bottom: 0;">
-                                    <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': item.progress + '%' }"></div>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                <span *ngIf="item.isSuccess"><i class="glyphicon glyphicon-ok"></i></span>
-                                <span *ngIf="item.isCancel"><i class="glyphicon glyphicon-ban-circle"></i></span>
-                                <span *ngIf="item.isError"><i class="glyphicon glyphicon-remove"></i></span>
-                            </td>
-                            <td nowrap>
-                                <button type="button" class="btn btn-success btn-xs" (click)="item.upload()" [disabled]="item.isReady || item.isUploading || item.isSuccess">
-                                    <span class="glyphicon glyphicon-upload"></span> Upload
-                                </button>
-                                <button type="button" class="btn btn-warning btn-xs" (click)="item.cancel()" [disabled]="!item.isUploading">
-                                    <span class="glyphicon glyphicon-ban-circle"></span> Cancel
-                                </button>
-                                <button type="button" class="btn btn-danger btn-xs" (click)="item.remove()">
-                                    <span class="glyphicon glyphicon-trash"></span> Remove
-                                </button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <div>
-                    <div>
-                        Queue progress:
-                        <div class="progress">
-                            <div class="progress-bar" role="progressbar" [ngStyle]="{ 'width': uploader.progress + '%' }"></div>
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-success btn-s" (click)="uploader.uploadAll()" [disabled]="!uploader.getNotUploadedItems().length">
-                        <span class="glyphicon glyphicon-upload"></span> Upload all
-                    </button>
-                    <button type="button" class="btn btn-warning btn-s" (click)="uploader.cancelAll()" [disabled]="!uploader.isUploading">
-                        <span class="glyphicon glyphicon-ban-circle"></span> Cancel all
-                    </button>
-                    <button type="button" class="btn btn-danger btn-s" (click)="uploader.clearQueue()" [disabled]="!uploader.queue.length">
-                        <span class="glyphicon glyphicon-trash"></span> Remove all
-                    </button>
-                </div>
-
-            </div>
-
-        </div>
-
-        <br><br>
-
-        <div class="row">
-            <div class="col-md-12">
-                <div class="panel panel-default">
-                    <div class="panel-heading">Response</div>
-                    <div class="panel-body">
-                        {{ response }}
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- <div class="col-md-12">
+<!-- <div class="col-md-12">
         <h3 id="event-list-margin">Vartical Tabs</h3>
     </div> -->
-    <div class="col-md-12">
-        <div class="col-xs-3" style="padding-left: 4px;padding-right: 0px;">
-            <!-- required for floating -->
-            <!-- Nav tabs -->
-            <ul class="nav nav-tabs tabs-left">
-                <li [ngClass]="{'active': tab.active}" *ngFor="let tab of tabs">
-                    <a (click)="tabChange(tab)" [innerHTML]="tab.name">
-                    </a>
-                </li>
-            </ul>
+<div class="col-md-12">
+    <p><strong>{{ message }}</strong></p>
+    <div class="col-xs-3" style="padding-left: 4px;padding-right: 0px;">
+        <!-- required for floating -->
+
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs tabs-left">
+            <li [ngClass]="{'active': tab.active}" *ngFor="let tab of tabs">
+                <a (click)="tabChange(tab)" [innerHTML]="tab.name">
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="col-xs-9" style="padding-left: 2px;padding-right: 2px;">
+        <div class="tab-content">
+            <div class="tab-pane active" [ngClass]="{'showTab':selectedUserTab == 1, 'hideTab':selectedUserTab != 1}">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i style="color: deepskyblue">Get </i> <b style="color: deeppink">Short Link </b>
+                        <i style="color: rgb(8, 39, 65)">qwp.ir</i>
+                    </div>
+                    <div class="panel-body">
+                        <form #registerForm="ngForm" (ngSubmit)="onSubmitGet()" aria-labelledby="title">
+
+                            <div class="row m-0">
+                                <div class="col-lg-12">
+
+                                    <input [(ngModel)]="modelTargetGetDto.Key" name="Key" type="text" class="form-control input-ntk mb-3" placeholder="***@*****" #Key="ngModel" minlength="8" required />
+                                    <div *ngIf="Key.invalid && (Key.dirty || Key.touched)" class="alert alert-danger">
+                                        <div *ngIf="Key.errors.required">
+                                            Key is required.
+                                        </div>
+                                        <div *ngIf="Key.errors.minlength">
+                                            Key must be at least 8 characters long.
+                                        </div>
+                                    </div>
+                                    <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
+                                    <input [(ngModel)]="modelTargetGetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextGet="ngModel" autocomplete="false" class="form-control input-ntk mb-3" placeholder="Captcha Text" required />
+                                    <div *ngIf="captchaTextGet.invalid && (captchaTextGet.dirty || captchaTextGet.touched)" class="alert alert-danger">
+                                        <div *ngIf="captchaTextGet.errors.required">
+                                            captcha Text is required.
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary" style="width: 100%;">Get Link</button>
+
+                                    <p>{{messageShortLinkGet}}</p>
+                                    <!--View Get-->
+                                    <div *ngIf="modelTargetGetResponce && modelTargetGetResponce.Key&& modelTargetGetResponce.Key.length>0">
+                                        <h4 class="card-title mb-2" *ngIf="modelTargetGetResponce.Description">
+                                            <textarea>
+                                            {{modelTargetGetResponce.Description}}
+                                            </textarea>
+                                        </h4>
+                                        <h4 class="card-title mb-2" *ngIf="modelTargetGetResponce.UrlAddress">
+                                            <a href="{{modelTargetGetResponce.UrlAddress}}">
+                                                {{modelTargetGetResponce.UrlAddress}}
+                                            </a>
+                                        </h4>
+                                        <h4 class="card-title mb-2" *ngIf="modelTargetGetResponce.ShortLinkUrl">
+                                            <a href="{{modelTargetGetResponce.ShortLinkUrl}}">
+                                                {{modelTargetGetResponce.ShortLinkUrl}}
+                                            </a>
+                                        </h4>
+                                        <div *ngIf="modelTargetGetResponce.ShortLinkQRCodeBase64">
+                                            <a href="{{modelTargetGetResponce.ShortLinkUrl}}">
+                                                <img src="{{modelTargetGetResponce.ShortLinkQRCodeBase64}}" style="width:200px">
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <!--View Get-->
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+                <!-- Profile tab -->
+
+            </div>
+
+            <div class="tab-pane active" [ngClass]="{'showTab':selectedUserTab == 2, 'hideTab':selectedUserTab != 2}">
+                <!-- Change password tab -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i style="color: deepskyblue">Set </i> <b style="color: deeppink">Short Link </b>
+                        <i style="color: rgb(8, 39, 65)">qwp.ir</i>
+
+
+
+                    </div>
+                    <div class="panel-body">
+                        <form #registerForm="ngForm" (ngSubmit)="onSubmitSetLink()">
+                            <div class="row m-0">
+
+                                <div class="col-lg-12">
+                                    <input [(ngModel)]="modelTargetSetDto.UrlAddress" name="UrlAddress" #UrlAddress="ngModel" required minlength="6" type="text" class="form-control input-ntk mb-3" placeholder="Url Address" required />
+
+                                    <div *ngIf="UrlAddress.invalid && (UrlAddress.dirty || UrlAddress.touched)" class="alert alert-danger">
+                                        <div *ngIf="UrlAddress.errors.required">
+                                            Url is required.
+                                        </div>
+                                        <div *ngIf="UrlAddress.errors.minlength">
+                                            Url must be at least 6 characters long.
+                                        </div>
+                                    </div>
+                                    <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
+                                    <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextSetUrlAddress="ngModel" autocomplete="false" class="form-control input-ntk mb-3" placeholder="Captcha Text" required />
+                                    <div *ngIf="captchaTextSetUrlAddress.invalid && (captchaTextSetUrlAddress.dirty || captchaTextSetUrlAddress.touched)" class="alert alert-danger">
+                                        <div *ngIf="captchaTextSetUrlAddress.errors.required">
+                                            captcha Text is required.
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary" style="width: 100%;">Set Link</button>
+
+                                    <p>{{messageShortLinkSetLink}}</p>
+                                        <!--View Set-->
+    <div *ngIf="modelTargetSetResponceSetLink && modelTargetSetResponceSetLink.Key&& modelTargetSetResponceSetLink.Key.length>0">
+        <h4 class="card-title mb-2">Key:</h4>
+        <h4 class="card-title mb-2">{{modelTargetSetResponceSetLink.Key}}</h4>
+        <h4 class="card-title mb-2" *ngIf="modelTargetSetResponceSetLink.ShortLinkUrl">
+            <a href="{{modelTargetSetResponceSetLink.ShortLinkUrl}}">
+                {{modelTargetSetResponceSetLink.ShortLinkUrl}}
+            </a>
+        </h4>
+        <div *ngIf="modelTargetSetResponceSetLink.ShortLinkQRCodeBase64">
+            <a href="{{modelTargetSetResponceSetLink.ShortLinkUrl}}">
+                <img src="{{modelTargetSetResponceSetLink.ShortLinkQRCodeBase64}}" style="width:200px">
+            </a>
         </div>
-
-        <div class="col-xs-9" style="padding-left: 2px;padding-right: 2px;">
-            <div class="tab-content">
-                <div class="tab-pane active" [ngClass]="{'showTab':selectedUserTab == 1, 'hideTab':selectedUserTab != 1}">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i style="color: deepskyblue">Get</i> <b style="color: deeppink">Link</b>
-                        </div>
-                        <div class="panel-body">
-                            <form #registerForm="ngForm" (ngSubmit)="onSubmitGet()" aria-labelledby="title">
-
-                                <div class="row m-0">
-                                    <div class="col-lg-12">
-
-
-                                        <h4 class="card-title mb-2">Get Short Link</h4>
-                                        <p class="card-text mb-3">
-                                            You Can Get Short Link qwp.ir
-                                        </p>
-                                        <input [(ngModel)]="modelTargetGetDto.Key" name="Key" type="text" class="form-control mb-3" placeholder="***@*****" #Key="ngModel" minlength="8" required />
-                                        <div *ngIf="Key.invalid && (Key.dirty || Key.touched)" class="alert alert-danger">
-                                            <div *ngIf="Key.errors.required">
-                                                Key is required.
-                                            </div>
-                                            <div *ngIf="Key.errors.minlength">
-                                                Key must be at least 8 characters long.
-                                            </div>
-                                        </div>
-                                        <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
-                                        <input [(ngModel)]="modelTargetGetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextGet="ngModel" autocomplete="false" class="form-control mb-3" placeholder="Captcha Text" required />
-                                        <div *ngIf="captchaTextGet.invalid && (captchaTextGet.dirty || captchaTextGet.touched)" class="alert alert-danger">
-                                            <div *ngIf="captchaTextGet.errors.required">
-                                                captcha Text is required.
-                                            </div>
-                                        </div>
-                                        <button class="btn btn-primary" style="width: 90%;">Get Link</button>
-
-
-
-                                    </div>
+    </div>
+    <!--View Set-->
                                 </div>
+                            </div>
 
-                            </form>
-                        </div>
-                    </div>
-                    <!-- Profile tab -->
-
-                </div>
-
-                <div class="tab-pane active" [ngClass]="{'showTab':selectedUserTab == 2, 'hideTab':selectedUserTab != 2}">
-                    <!-- Change password tab -->
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-
-                            <b style="color: deepskyblue">Set</b> <i style="color: deeppink">Link</i>
-
-                        </div>
-                        <div class="panel-body">
-                            <form #registerForm="ngForm" (ngSubmit)="onSubmitSetLink()">
-                                <div class="row m-0">
-
-                                    <div class="col-lg-12">
-
-
-                                        <h4 class="card-title mb-2">Set Short Link</h4>
-                                        <p class="card-text mb-3">
-                                            You Can Make Short Link qwp.ir
-                                        </p>
-                                        <input [(ngModel)]="modelTargetSetDto.UrlAddress" name="UrlAddress" #UrlAddress="ngModel" required minlength="6" type="text" class="form-control mb-3" placeholder="Url Address" required />
-
-                                        <div *ngIf="UrlAddress.invalid && (UrlAddress.dirty || UrlAddress.touched)" class="alert alert-danger">
-                                            <div *ngIf="UrlAddress.errors.required">
-                                                Url is required.
-                                            </div>
-                                            <div *ngIf="UrlAddress.errors.minlength">
-                                                Url must be at least 6 characters long.
-                                            </div>
-                                        </div>
-                                        <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
-                                        <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextSetUrlAddress="ngModel" autocomplete="false" class="form-control mb-3" placeholder="Captcha Text" required />
-                                        <div *ngIf="captchaTextSetUrlAddress.invalid && (captchaTextSetUrlAddress.dirty || captchaTextSetUrlAddress.touched)" class="alert alert-danger">
-                                            <div *ngIf="captchaTextSetUrlAddress.errors.required">
-                                                captcha Text is required.
-                                            </div>
-                                        </div>
-                                        <button class="btn btn-primary" style="width: 90%;">Set Link</button>
-
-                                    </div>
-                                </div>
-
-                            </form>
-                        </div>
+                        </form>
                     </div>
                 </div>
+            </div>
 
-                <div class="tab-pane active" [ngClass]="{'showTab':selectedUserTab == 3, 'hideTab':selectedUserTab != 3}">
-                    <!-- Admin tab -->
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i style="color: deepskyblue">Set</i> <b style="color: deeppink">File</b>
-                        </div>
-                        <div class="panel-body">
-                            <form #registerForm="ngForm" (ngSubmit)="onSubmitSetFile()">
-                                <div class="row m-0">
+            <div class="tab-pane active" [ngClass]="{'showTab':selectedUserTab == 3, 'hideTab':selectedUserTab != 3}">
+                <!-- Admin tab -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i style="color: deepskyblue">Set </i> <b style="color: deeppink">File Short Link</b>
+                    </div>
+                    <div class="panel-body">
+                        <form #registerForm="ngForm" (ngSubmit)="onSubmitSetFile()">
+                            <div class="row m-0">
 
-                                    <div class="col-lg-12">
+                                <div class="col-lg-12">
 
+                                    <app-upload-file></app-upload-file>
 
-                                        <h4 class="card-title mb-2">Set memo Short Link</h4>
-                                        <p class="card-text mb-3">
-                                            You Can Make Short Link qwp.ir
-                                        </p>
-                                        <label for="FileInput">Choose File</label>
-                                        <input type="file" id="FileInput" (change)="handleFileInput($event.target.files)" />
-                                        <div class="progress" *ngIf="progress">
-                                            <div class="progress-bar" [style.width]="progress + '%'">{{progress}}%</div>
-                                        </div>
-                                        <!-- <div *ngIf="fileInput.invalid && (fileInput.dirty || fileInput.touched)" class="alert alert-danger">
+                                    <label for="FileInput">Choose File</label>
+                                    <input type="file" id="FileInput" (change)="handleFileInput($event.target.files)" />
+                                    <div class="progress" *ngIf="progress">
+                                        <div class="progress-bar" [style.width]="progress + '%'">{{progress}}%</div>
+                                    </div>
+                                    <!-- <div *ngIf="fileInput.invalid && (fileInput.dirty || fileInput.touched)" class="alert alert-danger">
                                             <div *ngIf="fileInput.errors.required">
                                                 FileInput is required.
                                             </div>
@@ -270,113 +168,99 @@
                                                 Url must be at least 6 characters long.
                                             </div>
                                         </div> -->
-                                        <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
-                                        <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextSetFile="ngModel" autocomplete="false" class="form-control mb-3" placeholder="Captcha Text" required />
-                                        <div *ngIf="captchaTextSetFile.invalid && (captchaTextSetFile.dirty || captchaTextSetFile.touched)" class="alert alert-danger">
-                                            <div *ngIf="captchaTextSetFile.errors.required">
-                                                captcha Text is required.
-                                            </div>
+                                    <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
+                                    <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextSetFile="ngModel" autocomplete="false" class="form-control input-ntk mb-3" placeholder="Captcha Text" required />
+                                    <div *ngIf="captchaTextSetFile.invalid && (captchaTextSetFile.dirty || captchaTextSetFile.touched)" class="alert alert-danger">
+                                        <div *ngIf="captchaTextSetFile.errors.required">
+                                            captcha Text is required.
                                         </div>
-                                        <button class="btn btn-primary" style="width: 90%;">Set Link</button>
-
                                     </div>
+                                    <button class="btn btn-primary" style="width: 100%;">Set Link</button>
+                                    <p>{{messageShortLinkSetFile}}</p>
+                                        <!--View Set-->
+    <div *ngIf="modelTargetSetResponceSetFile && modelTargetSetResponceSetFile.Key&& modelTargetSetResponceSetFile.Key.length>0">
+        <h4 class="card-title mb-2">Key:</h4>
+        <h4 class="card-title mb-2">{{modelTargetSetResponceSetFile.Key}}</h4>
+        <h4 class="card-title mb-2" *ngIf="modelTargetSetResponceSetFile.ShortLinkUrl">
+            <a href="{{modelTargetSetResponceSetFile.ShortLinkUrl}}">
+                {{modelTargetSetResponceSetFile.ShortLinkUrl}}
+            </a>
+        </h4>
+        <div *ngIf="modelTargetSetResponceSetFile.ShortLinkQRCodeBase64">
+            <a href="{{modelTargetSetResponceSetFile.ShortLinkUrl}}">
+                <img src="{{modelTargetSetResponceSetFile.ShortLinkQRCodeBase64}}" style="width:200px">
+            </a>
+        </div>
+    </div>
+    <!--View Set-->
                                 </div>
+                            </div>
 
-                            </form>
-                        </div>
+                        </form>
                     </div>
                 </div>
+            </div>
 
-                <div class="tab-pane active" [ngClass]="{'showTab':selectedUserTab == 4, 'hideTab':selectedUserTab != 4}">
-                    <!-- stripe account tab -->
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i style="color: deepskyblue">Set</i> <b style="color: deeppink">Memo</b>
-                        </div>
-                        <div class="panel-body">
-                            <form #registerForm="ngForm" (ngSubmit)="onSubmitSetDescription()">
-                                <div class="row m-0">
+            <div class="tab-pane active" [ngClass]="{'showTab':selectedUserTab == 4, 'hideTab':selectedUserTab != 4}">
+                <!-- stripe account tab -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <i style="color: deepskyblue">Set </i> <b style="color: deeppink">Memo Short Link</b>
+                    </div>
+                    <div class="panel-body">
+                        <form #registerForm="ngForm" (ngSubmit)="onSubmitSetDescription()">
+                            <div class="row m-0">
 
-                                    <div class="col-lg-12">
-
-
-                                        <h4 class="card-title mb-2">Set memo Short Link</h4>
-                                        <p class="card-text mb-3">
-                                            You Can Make Short Link qwp.ir
-                                        </p>
-                                        <textarea [(ngModel)]="modelTargetSetDto.Description" name="Description" #Description="ngModel" required minlength="6" type="text" class="form-control mb-3" placeholder="Url Address" required>
+                                <div class="col-lg-12">
+                                    <textarea [(ngModel)]="modelTargetSetDto.Description" name="Description" #Description="ngModel" required minlength="6" type="text" class="form-control input-ntk mb-3" placeholder="Yoy Text And Memo" required>
 
                                         </textarea>
-                                        <div *ngIf="Description.invalid && (Description.dirty || Description.touched)" class="alert alert-danger">
-                                            <div *ngIf="Description.errors.required">
-                                                Description is required.
-                                            </div>
-                                            <div *ngIf="Description.errors.minlength">
-                                                Url must be at least 6 characters long.
-                                            </div>
+                                    <div *ngIf="Description.invalid && (Description.dirty || Description.touched)" class="alert alert-danger">
+                                        <div *ngIf="Description.errors.required">
+                                            Description is required.
                                         </div>
-                                        <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
-                                        <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextSetDescription="ngModel" autocomplete="false" class="form-control mb-3" placeholder="Captcha Text" required />
-                                        <div *ngIf="captchaTextSetDescription.invalid && (captchaTextSetDescription.dirty || captchaTextSetDescription.touched)" class="alert alert-danger">
-                                            <div *ngIf="captchaTextSetDescription.errors.required">
-                                                captcha Text is required.
-                                            </div>
+                                        <div *ngIf="Description.errors.minlength">
+                                            Url must be at least 6 characters long.
                                         </div>
-                                        <button class="btn btn-primary" style="width: 90%;">Set Link</button>
-
                                     </div>
+                                    <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
+                                    <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextSetDescription="ngModel" autocomplete="false" class="form-control input-ntk mb-3" placeholder="Captcha Text" required />
+                                    <div *ngIf="captchaTextSetDescription.invalid && (captchaTextSetDescription.dirty || captchaTextSetDescription.touched)" class="alert alert-danger">
+                                        <div *ngIf="captchaTextSetDescription.errors.required">
+                                            captcha Text is required.
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary" style="width: 100%;">Set Link</button>
+                                    <p>{{messageShortLinkSetDescription}}</p>
+                                        <!--View Set-->
+    <div *ngIf="modelTargetSetResponceSetDescription && modelTargetSetResponceSetDescription.Key&& modelTargetSetResponceSetDescription.Key.length>0">
+        <h4 class="card-title mb-2">Key:</h4>
+        <h4 class="card-title mb-2">{{modelTargetSetResponceSetDescription.Key}}</h4>
+        <h4 class="card-title mb-2" *ngIf="modelTargetSetResponceSetDescription.ShortLinkUrl">
+            <a href="{{modelTargetSetResponceSetDescription.ShortLinkUrl}}">
+                {{modelTargetSetResponceSetDescription.ShortLinkUrl}}
+            </a>
+        </h4>
+        <div *ngIf="modelTargetSetResponceSetDescription.ShortLinkQRCodeBase64">
+            <a href="{{modelTargetSetResponceSetDescription.ShortLinkUrl}}">
+                <img src="{{modelTargetSetResponceSetDescription.ShortLinkQRCodeBase64}}" style="width:200px">
+            </a>
+        </div>
+    </div>
+    <!--View Set-->
                                 </div>
+                            </div>
 
-                            </form>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
-        <!--View Set-->
-        <div *ngIf="modelTargetSetResponce && modelTargetSetResponce.Key&& modelTargetSetResponce.Key.length>0">
-            <h4 class="card-title mb-2">Key:</h4>
-            <h4 class="card-title mb-2">{{modelTargetSetResponce.Key}}</h4>
-            <h4 class="card-title mb-2" *ngIf="modelTargetSetResponce.ShortLinkUrl">
-                <a href="{{modelTargetSetResponce.ShortLinkUrl}}">
-                    {{modelTargetSetResponce.ShortLinkUrl}}
-                </a>
-            </h4>
-            <div *ngIf="modelTargetSetResponce.ShortLinkQRCodeBase64">
-                <a href="{{modelTargetSetResponce.ShortLinkUrl}}">
-                    <img src="{{modelTargetSetResponce.ShortLinkQRCodeBase64}}" style="width:200px">
-                </a>
-            </div>
-        </div>
-        <!--View Set-->
-        <!--View Get-->
-        <div *ngIf="modelTargetGetResponce && modelTargetGetResponce.Key&& modelTargetGetResponce.Key.length>0">
-            <h4 class="card-title mb-2">Key:</h4>
-            <h4 class="card-title mb-2">{{modelTargetGetResponce.Key}}</h4>
-            <h4 class="card-title mb-2" *ngIf="modelTargetGetResponce.Description">
-                <textarea>
-                {{modelTargetGetResponce.Description}}
-                </textarea>
-            </h4>
-            <h4 class="card-title mb-2" *ngIf="modelTargetGetResponce.UrlAddress">
-                <a href="{{modelTargetGetResponce.UrlAddress}}">
-                    {{modelTargetGetResponce.UrlAddress}}
-                </a>
-            </h4>
-            <h4 class="card-title mb-2" *ngIf="modelTargetGetResponce.ShortLinkUrl">
-                <a href="{{modelTargetGetResponce.ShortLinkUrl}}">
-                    {{modelTargetGetResponce.ShortLinkUrl}}
-                </a>
-            </h4>
-            <div *ngIf="modelTargetGetResponce.ShortLinkQRCodeBase64">
-                <a href="{{modelTargetGetResponce.ShortLinkUrl}}">
-                    <img src="{{modelTargetGetResponce.ShortLinkQRCodeBase64}}" style="width:200px">
-                </a>
-            </div>
-        </div>
-        <!--View Get-->
     </div>
+
+
 </div>
+
 
 <!-- 
 

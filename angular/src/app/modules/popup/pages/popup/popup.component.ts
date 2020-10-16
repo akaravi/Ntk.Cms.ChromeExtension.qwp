@@ -1,6 +1,13 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { AfterViewInit, ChangeDetectorRef, Component, Directive, Inject, OnInit, ViewChild } from "@angular/core";
-import { FileUploader } from "ng2-file-upload";
+import {
+  AfterViewInit,
+  ChangeDetectorRef,
+  Component,
+  Directive,
+  Inject,
+  OnInit,
+  ViewChild,
+} from "@angular/core";
 import { bindCallback, Subscription } from "rxjs";
 import { catchError, map, retry, tap } from "rxjs/operators";
 import { CmsService } from "src/app/cmsService/cms.service";
@@ -11,27 +18,19 @@ import { LinkManagementTargetShortLinkSetDtoModel } from "src/app/models/LinkMan
 import { LinkManagementTargetShortLinkSetResponceModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkSetResponceModel";
 import { TAB_ID } from "../../../../providers/tab-id.provider";
 const URL = "http://localhost:2390/api/v1/FileContent/Upload/";
-//const URL =  "https://apicms.ir/api/v1/FileContent/Upload/";;
-
-
-
-// import { Transfer } from 'projects/ngx-flow/src/public_api';
-// import { FlowDirective } from 'projects/ngx-flow/src/lib/flow.directive';
 
 @Component({
   selector: "app-popup",
   templateUrl: "popup.component.html",
   styleUrls: ["popup.component.scss"],
 })
-// class FileSelectDirective
 export class PopupComponent implements OnInit {
-  //public uploader: FileUploader = new FileUploader({ url: URL, itemAlias: 'photo' });
-
-
-
   message: string;
+  messageShortLinkGet: string;
+  messageShortLinkSetLink: string;
+  messageShortLinkSetFile: string;
+  messageShortLinkSetDescription: string;
   constructor(
-   
     @Inject(TAB_ID) readonly tabId: number,
     private http: HttpClient,
     private cmsService: CmsService
@@ -46,7 +45,9 @@ export class PopupComponent implements OnInit {
   modelTargetGetResponce: LinkManagementTargetShortLinkGetResponceModel = new LinkManagementTargetShortLinkGetResponceModel();
   modelTargetSetDto: LinkManagementTargetShortLinkSetDtoModel = new LinkManagementTargetShortLinkSetDtoModel();
 
-  modelTargetSetResponce: LinkManagementTargetShortLinkSetResponceModel = new LinkManagementTargetShortLinkSetResponceModel();
+  modelTargetSetResponceSetLink: LinkManagementTargetShortLinkSetResponceModel = new LinkManagementTargetShortLinkSetResponceModel();
+  modelTargetSetResponceSetFile: LinkManagementTargetShortLinkSetResponceModel = new LinkManagementTargetShortLinkSetResponceModel();
+  modelTargetSetResponceSetDescription: LinkManagementTargetShortLinkSetResponceModel = new LinkManagementTargetShortLinkSetResponceModel();
   fileToUpload: File = null;
   selectedUserTab = 1;
   progress: number;
@@ -76,78 +77,10 @@ export class PopupComponent implements OnInit {
       active: false,
     },
   ];
- 
+
   ngOnInit() {
     this.onCaptchaOrder();
     this.SetCurrentUrl();
-
-
-     
-    // this.flow.assignBrowse(document.getElementById('browseButton'));
-    // this.flow.assignDrop(document.getElementById('dropTarget'));
-
-
-    // this.flow.assignDrop(document.getElementById('flow-drop'));
-    // this.flow.assignBrowse(document.getElementById('flow-browse'));
-    // this.flow.assignBrowse(document.getElementById('flow-browse-folder'), true);
-    // this.flow.assignBrowse(document.getElementById('flow-browse-image'), false, false, {accept: 'image/*'});
-
-
-    // if (!this.flow.support) location.href = "/some-old-crappy-uploader";
-    // this.flow.on("fileAdded", function (file, event) {
-    //   console.log(file, event);
-    // });
-    // this.flow.on("fileSuccess", function (file, message) {
-    //   console.log(file, message);
-    // });
-    // this.flow.on("fileError", function (file, message) {
-    //   console.log(file, message);
-    // });
-    this.uploader = new FileUploader({
-      url: URL,
-      itemAlias: "file",
-    });
-    this.uploader.onBuildItemForm = (fileItem: any, form: any) => {
-      console.log(fileItem);
-      form.append("filename", fileItem.file.name);
-      this.uploader.onCompleteItem = (
-        item: any,
-        response: any,
-        status: any,
-        headers: any
-      ) => {
-        console.log("ImageUpload:item:", item);
-        console.log("ImageUpload:status:", status);
-        console.log("ImageUpload:response:", response);
-      };
-    };
-
-    // this.uploader = new FileUploader({
-    //   url: URL,
-    //   disableMultipart: true, // 'DisableMultipart' must be 'true' for formatDataFunction to be called.
-    //   formatDataFunctionIsAsync: true,
-    //   method:"post",
-
-    //   formatDataFunction: async (item) => {
-    //     console.log(item);
-    //     return new Promise( (resolve, reject) => {
-    //       resolve({
-    //         // fileName: item._file.name,
-    //         // name: item._file.name,
-    //         // length: item._file.size,
-    //         //contentType: item._file.type,
-    //         //date: new Date()
-    //       });
-    //     });
-    //   }
-    // });
-
-    this.hasBaseDropZoneOver = false;
-    this.hasAnotherDropZoneOver = false;
-
-    this.response = "";
-
-    this.uploader.response.subscribe((res) => (this.response = res));
   }
   async onClick(): Promise<void> {
     this.message = await bindCallback<string>(
@@ -182,6 +115,8 @@ export class PopupComponent implements OnInit {
       .toPromise();
   }
   onCaptchaOrder() {
+    this.modelTargetSetDto.CaptchaText = "";
+    this.modelTargetGetDto.CaptchaText = "";
     this.subManager.add(
       this.cmsService.ServiceCaptcha().subscribe(
         (next) => {
@@ -195,48 +130,72 @@ export class PopupComponent implements OnInit {
   }
   onSubmitGet() {
     this.submitted = true;
-    this.modelTargetSetResponce = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetSetResponceSetLink = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetSetResponceSetFile = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetSetResponceSetDescription = new LinkManagementTargetShortLinkSetResponceModel();
     this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
     this.modelTargetGetDto.CaptchaKey = this.captchaModel.Key;
     var res = this.modelTargetGetDto.Key.split("@");
     if (res.length < 2) {
-      this.message = "Key Is Worng.";
+      this.messageShortLinkGet = "Key Is Worng.";
+      return;
     }
+    this.messageShortLinkGet = "Runing ...";
+
     this.subManager.add(
       this.cmsService.ServiceShortLinkGet(this.modelTargetGetDto).subscribe(
         (next) => {
           if (next.IsSuccess) {
+            this.messageShortLinkGet = "Is Success";
             this.modelTargetGetResponce = next.Item;
-            console.log(
-              "modelTargetGetResponce IsSuccess" + this.modelTargetGetResponce
-            );
+          } else {
+            this.messageShortLinkGet = next.ErrorMessage;
           }
+          this.onCaptchaOrder();
         },
         (error) => {
+          this.messageShortLinkGet = "Error.";
+
           console.log("modelTargetGetResponce" + this.modelTargetGetResponce);
+          this.onCaptchaOrder();
         }
       )
     );
   }
   onSubmitSetLink() {
+    this.messageShortLinkSetLink = "Runing ...";
+
     this.submitted = true;
-    this.modelTargetSetResponce = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetSetResponceSetLink = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetSetResponceSetFile = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetSetResponceSetDescription = new LinkManagementTargetShortLinkSetResponceModel();
     this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
     this.modelTargetSetDto.CaptchaKey = this.captchaModel.Key;
     this.subManager.add(
       this.cmsService.ServiceShortLinkSet(this.modelTargetSetDto).subscribe(
         (next) => {
           if (next.IsSuccess) {
-            this.modelTargetSetResponce = next.Item;
+            this.messageShortLinkSetLink = "Is Success";
+            this.modelTargetSetResponceSetLink = next.Item;
+          } else {
+            this.messageShortLinkSetLink = next.ErrorMessage;
           }
+          this.onCaptchaOrder();
         },
-        (error) => {}
+        (error) => {
+          this.messageShortLinkSetLink = "Error ...";
+          this.onCaptchaOrder();
+        }
       )
     );
   }
   onSubmitSetDescription() {
+    this.messageShortLinkSetDescription = "Runing ...";
+
     this.submitted = true;
-    this.modelTargetSetResponce = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetSetResponceSetLink = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetSetResponceSetFile = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetSetResponceSetDescription = new LinkManagementTargetShortLinkSetResponceModel();
     this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
     this.modelTargetSetDto.CaptchaKey = this.captchaModel.Key;
     this.modelTargetSetDto.UrlAddress = "";
@@ -245,16 +204,26 @@ export class PopupComponent implements OnInit {
       this.cmsService.ServiceShortLinkSet(this.modelTargetSetDto).subscribe(
         (next) => {
           if (next.IsSuccess) {
-            this.modelTargetSetResponce = next.Item;
+            this.messageShortLinkSetDescription = "Is Success";
+            this.modelTargetSetResponceSetDescription = next.Item;
+          } else {
+            this.messageShortLinkSetDescription = next.ErrorMessage;
           }
+          this.onCaptchaOrder();
         },
-        (error) => {}
+        (error) => {
+          this.messageShortLinkSetDescription = "Error";
+          this.onCaptchaOrder();
+        }
       )
     );
   }
   onSubmitSetFile() {
+    this.messageShortLinkSetFile = "Runing ...";
     this.submitted = true;
-    this.modelTargetSetResponce = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetSetResponceSetLink = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetSetResponceSetFile = new LinkManagementTargetShortLinkSetResponceModel();
+    this.modelTargetSetResponceSetDescription = new LinkManagementTargetShortLinkSetResponceModel();
     this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
     this.modelTargetSetDto.CaptchaKey = this.captchaModel.Key;
     this.modelTargetSetDto.UrlAddress = "";
@@ -263,10 +232,17 @@ export class PopupComponent implements OnInit {
       this.cmsService.ServiceShortLinkSet(this.modelTargetSetDto).subscribe(
         (next) => {
           if (next.IsSuccess) {
-            this.modelTargetSetResponce = next.Item;
+            this.messageShortLinkSetFile = "Is Success";
+            this.modelTargetSetResponceSetFile = next.Item;
+          } else {
+            this.messageShortLinkSetFile = next.ErrorMessage;
           }
+          this.onCaptchaOrder();
         },
-        (error) => {}
+        (error) => {
+          this.messageShortLinkSetFile = "Error";
+          this.onCaptchaOrder();
+        }
       )
     );
   }
@@ -303,17 +279,5 @@ export class PopupComponent implements OnInit {
         tab.active = false;
       }
     }
-  }
-
-  uploader: FileUploader;
-  hasBaseDropZoneOver: boolean;
-  hasAnotherDropZoneOver: boolean;
-  response: string;
-  public fileOverBase(e: any): void {
-    this.hasBaseDropZoneOver = e;
-  }
-
-  public fileOverAnother(e: any): void {
-    this.hasAnotherDropZoneOver = e;
   }
 }
