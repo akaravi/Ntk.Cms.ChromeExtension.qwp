@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from "@angular/common/http";
-import { Component, Directive, Inject, OnInit } from "@angular/core";
-import { FileUploader } from 'ng2-file-upload';
+import { AfterViewInit, ChangeDetectorRef, Component, Directive, Inject, OnInit, ViewChild } from "@angular/core";
+import { FileUploader } from "ng2-file-upload";
 import { bindCallback, Subscription } from "rxjs";
 import { catchError, map, retry, tap } from "rxjs/operators";
 import { CmsService } from "src/app/cmsService/cms.service";
@@ -9,10 +9,14 @@ import { LinkManagementTargetShortLinkGetDtoModel } from "src/app/models/LinkMan
 import { LinkManagementTargetShortLinkGetResponceModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkGetResponceModel";
 import { LinkManagementTargetShortLinkSetDtoModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkSetDtoModel";
 import { LinkManagementTargetShortLinkSetResponceModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkSetResponceModel";
-
 import { TAB_ID } from "../../../../providers/tab-id.provider";
-const URL =  "http://localhost:2390/api/v1/FileContent/Upload/";;
+const URL = "http://localhost:2390/api/v1/FileContent/Upload/";
 //const URL =  "https://apicms.ir/api/v1/FileContent/Upload/";;
+
+
+
+// import { Transfer } from 'projects/ngx-flow/src/public_api';
+// import { FlowDirective } from 'projects/ngx-flow/src/lib/flow.directive';
 
 @Component({
   selector: "app-popup",
@@ -20,18 +24,21 @@ const URL =  "http://localhost:2390/api/v1/FileContent/Upload/";;
   styleUrls: ["popup.component.scss"],
 })
 // class FileSelectDirective
-
 export class PopupComponent implements OnInit {
   //public uploader: FileUploader = new FileUploader({ url: URL, itemAlias: 'photo' });
 
+
+
   message: string;
   constructor(
+   
     @Inject(TAB_ID) readonly tabId: number,
     private http: HttpClient,
     private cmsService: CmsService
   ) {
     this.progress = 0;
   }
+
   submitted = false;
   subManager = new Subscription();
   captchaModel: CaptchaModel = new CaptchaModel();
@@ -69,26 +76,52 @@ export class PopupComponent implements OnInit {
       active: false,
     },
   ];
+ 
   ngOnInit() {
     this.onCaptchaOrder();
     this.SetCurrentUrl();
-    this. uploader= new FileUploader({ 
 
-      url: URL, 
-      itemAlias: 'file',
-      
-     });
-     this.uploader.onBuildItemForm = (fileItem: any, form: any) => {
-       console.log(fileItem)
-      form.append('filename', fileItem.file.name);
-      this.uploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
 
+     
+    // this.flow.assignBrowse(document.getElementById('browseButton'));
+    // this.flow.assignDrop(document.getElementById('dropTarget'));
+
+
+    // this.flow.assignDrop(document.getElementById('flow-drop'));
+    // this.flow.assignBrowse(document.getElementById('flow-browse'));
+    // this.flow.assignBrowse(document.getElementById('flow-browse-folder'), true);
+    // this.flow.assignBrowse(document.getElementById('flow-browse-image'), false, false, {accept: 'image/*'});
+
+
+    // if (!this.flow.support) location.href = "/some-old-crappy-uploader";
+    // this.flow.on("fileAdded", function (file, event) {
+    //   console.log(file, event);
+    // });
+    // this.flow.on("fileSuccess", function (file, message) {
+    //   console.log(file, message);
+    // });
+    // this.flow.on("fileError", function (file, message) {
+    //   console.log(file, message);
+    // });
+    this.uploader = new FileUploader({
+      url: URL,
+      itemAlias: "file",
+    });
+    this.uploader.onBuildItemForm = (fileItem: any, form: any) => {
+      console.log(fileItem);
+      form.append("filename", fileItem.file.name);
+      this.uploader.onCompleteItem = (
+        item: any,
+        response: any,
+        status: any,
+        headers: any
+      ) => {
         console.log("ImageUpload:item:", item);
-        console.log("ImageUpload:status:",  status);
-        console.log("ImageUpload:response:",response);
+        console.log("ImageUpload:status:", status);
+        console.log("ImageUpload:response:", response);
+      };
     };
-  };
-  
+
     // this.uploader = new FileUploader({
     //   url: URL,
     //   disableMultipart: true, // 'DisableMultipart' must be 'true' for formatDataFunction to be called.
@@ -108,13 +141,13 @@ export class PopupComponent implements OnInit {
     //     });
     //   }
     // });
- 
+
     this.hasBaseDropZoneOver = false;
     this.hasAnotherDropZoneOver = false;
- 
-    this.response = '';
- 
-    this.uploader.response.subscribe( res => this.response = res );
+
+    this.response = "";
+
+    this.uploader.response.subscribe((res) => (this.response = res));
   }
   async onClick(): Promise<void> {
     this.message = await bindCallback<string>(
@@ -242,12 +275,16 @@ export class PopupComponent implements OnInit {
   }
   handleFileInput(files: FileList) {
     this.fileToUpload = files.item(0);
-  // this.cmsService
-  //        .ServiceUploadFile(this.fileToUpload, (x) => this.handleProgress(x))
+    // this.cmsService
+    //        .ServiceUploadFile(this.fileToUpload, (x) => this.handleProgress(x))
 
     this.subManager.add(
       this.cmsService
-        .ServiceUploadFileNormal(this.fileToUpload,this.fileToUpload.name, (x) => this.handleProgress(x))
+        .ServiceUploadFileNormal(
+          this.fileToUpload,
+          this.fileToUpload.name,
+          (x) => this.handleProgress(x)
+        )
         .subscribe(
           (next) => {
             this.modelTargetSetDto.UploadFileKey = next + "";
@@ -268,15 +305,15 @@ export class PopupComponent implements OnInit {
     }
   }
 
-  uploader:FileUploader;
-  hasBaseDropZoneOver:boolean;
-  hasAnotherDropZoneOver:boolean;
-  response:string;
-  public fileOverBase(e:any):void {
+  uploader: FileUploader;
+  hasBaseDropZoneOver: boolean;
+  hasAnotherDropZoneOver: boolean;
+  response: string;
+  public fileOverBase(e: any): void {
     this.hasBaseDropZoneOver = e;
   }
- 
-  public fileOverAnother(e:any):void {
+
+  public fileOverAnother(e: any): void {
     this.hasAnotherDropZoneOver = e;
   }
 }
