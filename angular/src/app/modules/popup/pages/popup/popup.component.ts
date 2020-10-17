@@ -16,7 +16,7 @@ import { LinkManagementTargetShortLinkGetDtoModel } from "src/app/models/LinkMan
 import { LinkManagementTargetShortLinkGetResponceModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkGetResponceModel";
 import { LinkManagementTargetShortLinkSetDtoModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkSetDtoModel";
 import { LinkManagementTargetShortLinkSetResponceModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkSetResponceModel";
-import { TAB_ID } from "../../../../providers/tab-id.provider";
+import { TAB, TAB_ID } from "../../../../providers/tab-id.provider";
 const URL = "http://localhost:2390/api/v1/FileContent/Upload/";
 
 @Component({
@@ -31,6 +31,7 @@ export class PopupComponent implements OnInit {
   messageShortLinkSetFile: string;
   messageShortLinkSetDescription: string;
   constructor(
+    @Inject(TAB) readonly tab: any,
     @Inject(TAB_ID) readonly tabId: number,
     private http: HttpClient,
     private cmsService: CmsService
@@ -79,8 +80,10 @@ export class PopupComponent implements OnInit {
   ];
 
   ngOnInit() {
+    //lert(JSON.stringify(this.tab));
     this.onCaptchaOrder();
     this.SetCurrentUrl();
+    if (this.tab) this.modelTargetSetDto.UrlAddress = this.tab.url;
   }
   async onClick(): Promise<void> {
     this.message = await bindCallback<string>(
@@ -279,5 +282,26 @@ export class PopupComponent implements OnInit {
         tab.active = false;
       }
     }
+  }
+  /* To copy Text from Textbox */
+  copyInputMessage(inputElement) {
+    inputElement.select();
+    document.execCommand("copy");
+    inputElement.setSelectionRange(0, 0);
+  }
+
+  /* To copy any Text */
+  copyText(val: string) {
+    let selBox = document.createElement("textarea");
+    selBox.style.position = "fixed";
+    selBox.style.left = "0";
+    selBox.style.top = "0";
+    selBox.style.opacity = "0";
+    selBox.value = val;
+    document.body.appendChild(selBox);
+    selBox.focus();
+    selBox.select();
+    document.execCommand("copy");
+    document.body.removeChild(selBox);
   }
 }
