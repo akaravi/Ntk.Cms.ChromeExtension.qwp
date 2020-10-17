@@ -24,7 +24,11 @@
                             <div class="row m-0">
                                 <div class="col-lg-12" *ngIf="!modelTargetGetResponce.Key||modelTargetGetResponce.Key.length==0">
 
-                                    <input [(ngModel)]="modelTargetGetDto.Key" name="Key" type="text" class="form-control input-ntk mb-3" placeholder="***@*****" #Key="ngModel" minlength="8" required />
+                                    <h5>
+                                        you can Get Created Short Link Onnly By Key
+                                    </h5>
+                                    <label for="key">Your Short Link Key:</label>
+                                    <input [(ngModel)]="modelTargetGetDto.Key" id="key" name="Key" type="text" class="form-control input-ntk mb-3" placeholder="***@*****" #Key="ngModel" minlength="8" required />
                                     <div *ngIf="Key.invalid && (Key.dirty || Key.touched)" class="alert alert-danger">
                                         <div *ngIf="Key.errors.required">
                                             Key is required.
