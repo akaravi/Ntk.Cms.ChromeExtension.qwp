@@ -117,41 +117,13 @@ export class CmsService implements OnDestroy {
         )
       );
   }
-  //progress: number;
-  ServiceUploadFile(file: File, handleProgressMethods: any) {
-    handleProgressMethods(1);
-    this.baseUrl = "http://localhost:2390/api/v1/";
-    const chunkSize = 10000;
-    var info: FileUploadChunkDtoModel = new FileUploadChunkDtoModel();
-    info.TotalChunks = file.size / chunkSize;
-    info.ChunkNumber = 0;
-    info.FileName = file.name;
-
-    for (let offset = 0; offset < file.size; offset += chunkSize) {
-      const chunkfile = file.slice(offset, offset + chunkSize);
-      info.ChunkNumber = info.ChunkNumber + 1;
-      info.Identifier = offset + "";
-      const apiResponse = this.sendChunk(chunkfile, info);
-    }
-
-  }
-  sendChunk(chunkfile, info: FileUploadChunkDtoModel) {
-    this.baseUrl = "http://localhost:2390/api/v1/"+ "FileContent" + "/Upload/";
-    const data = {
-      chunk: chunkfile,
-      offset: info,
-    };
-    return this.http.post(this.baseUrl , data);
-  }
-  ServiceUploadFileNormal(file: File,fileName:string, handleProgressMethods: any,Chunk :FileUploadChunkDtoModel=new FileUploadChunkDtoModel()) {
+ 
+  ServiceUploadFileNormal(file: File,fileName:string, handleProgressMethods: any) {
     handleProgressMethods(1);
     this.baseUrl = "http://localhost:2390/api/v1/";
     const formData = new FormData();
     formData.append("file", file);
     formData.append("fileName", fileName);
-    formData.append("ChunkNumber",Chunk.ChunkNumber+"");
-    formData.append("TotalChunks", Chunk.TotalChunks+"");
-    formData.append("Identifier", Chunk.Identifier+"");
     return this.http
       .post(this.baseUrl + "FileContent" + "/Upload/", formData, {
         headers: this.getHeaders(),
@@ -160,7 +132,6 @@ export class CmsService implements OnDestroy {
         responseType: "text",
       })
       .pipe(
-        // retry(this.configApiRetry),
         map((event: any) => {
           if (event.type == HttpEventType.UploadProgress) {
             handleProgressMethods(

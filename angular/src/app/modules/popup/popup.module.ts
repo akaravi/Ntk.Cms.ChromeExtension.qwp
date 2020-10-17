@@ -6,7 +6,8 @@ import { FormsModule } from "@angular/forms";
 // import { FileUploadModule } from "ng2-file-upload";
 import { NgxFlowModule, FlowInjectionToken } from '@flowjs/ngx-flow';
 import Flow from '@flowjs/flow.js';
-import { UploadFileComponent } from './upload-file/upload-file.component';
+import { UploadFileComponent } from '../upload-file/upload-file.component';
+
 
 @NgModule({
   declarations: [PopupComponent,UploadFileComponent],

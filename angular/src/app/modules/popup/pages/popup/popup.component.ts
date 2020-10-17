@@ -12,12 +12,12 @@ import { bindCallback, Subscription } from "rxjs";
 import { catchError, map, retry, tap } from "rxjs/operators";
 import { CmsService } from "src/app/cmsService/cms.service";
 import { CaptchaModel } from "src/app/models/CaptchaModel";
+import { ComponentOptionModel } from "src/app/models/componentOptionModel";
 import { LinkManagementTargetShortLinkGetDtoModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkGetDtoModel";
 import { LinkManagementTargetShortLinkGetResponceModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkGetResponceModel";
 import { LinkManagementTargetShortLinkSetDtoModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkSetDtoModel";
 import { LinkManagementTargetShortLinkSetResponceModel } from "src/app/models/LinkManagement/linkManagementTargetShortLinkSetResponceModel";
 import { TAB, TAB_ID } from "../../../../providers/tab-id.provider";
-const URL = "http://localhost:2390/api/v1/FileContent/Upload/";
 
 @Component({
   selector: "app-popup",
@@ -35,9 +35,7 @@ export class PopupComponent implements OnInit {
     @Inject(TAB_ID) readonly tabId: number,
     private http: HttpClient,
     private cmsService: CmsService
-  ) {
-    this.progress = 0;
-  }
+  ) {}
 
   submitted = false;
   subManager = new Subscription();
@@ -51,7 +49,9 @@ export class PopupComponent implements OnInit {
   modelTargetSetResponceSetDescription: LinkManagementTargetShortLinkSetResponceModel = new LinkManagementTargetShortLinkSetResponceModel();
   fileToUpload: File = null;
   selectedUserTab = 1;
-  progress: number;
+
+  uploadedfileName: string = "";
+  uploadedfileKey: string = "";
   tabs = [
     {
       name:
@@ -78,12 +78,26 @@ export class PopupComponent implements OnInit {
       active: false,
     },
   ];
+  optionsUploadFile: ComponentOptionModel = new ComponentOptionModel();
 
   ngOnInit() {
-    //lert(JSON.stringify(this.tab));
     this.onCaptchaOrder();
-    this.SetCurrentUrl();
+    this.optionsUploadFile.actions = {
+      onActionSelect: (model) => this.onActionSelectFile(model),
+    };
+
     if (this.tab) this.modelTargetSetDto.UrlAddress = this.tab.url;
+  }
+  onActionSelectFile(model: any) {
+    console.log("model", model);
+
+    if (model && model.fileKey) {
+      this.modelTargetSetDto.UploadFileKey = model.fileKey;
+      this.uploadedfileName = model.fileName;
+      if (this.uploadedfileKey.length > 0)
+        this.uploadedfileKey = this.uploadedfileKey + ",";
+      this.uploadedfileKey = this.uploadedfileKey + model.fileKey;
+    }
   }
   async onClick(): Promise<void> {
     this.message = await bindCallback<string>(
@@ -98,25 +112,7 @@ export class PopupComponent implements OnInit {
       )
       .toPromise();
   }
-  async SetCurrentUrl() {
-    // chrome.tabs.getCurrent(
-    //   function(tab) {
-    //     this.modelTargetSetDto.UrlAddress =  tab.url;
-    //   }
-    // );
-    return await bindCallback<chrome.tabs.Tab>(
-      chrome.tabs.getCurrent.bind(this)
-    )()
-      .pipe(
-        map(
-          (tab) => (this.modelTargetSetDto.UrlAddress = tab.url)
-          // chrome.runtime.lastError
-          //   ? "The current page is protected by the browser, goto: https://www.google.nl and try again."
-          //   : tab.url
-        )
-      )
-      .toPromise();
-  }
+
   onCaptchaOrder() {
     this.modelTargetSetDto.CaptchaText = "";
     this.modelTargetGetDto.CaptchaText = "";
@@ -124,9 +120,12 @@ export class PopupComponent implements OnInit {
       this.cmsService.ServiceCaptcha().subscribe(
         (next) => {
           this.captchaModel = next.Item;
+          this.modelTargetSetDto.CaptchaKey = this.captchaModel.Key;
         },
         (error) => {
           this.message = "خطا در دریافت عکس کپچا";
+          this.modelTargetSetDto.CaptchaKey = "";
+          this.captchaModel = new CaptchaModel();
         }
       )
     );
@@ -159,7 +158,6 @@ export class PopupComponent implements OnInit {
         (error) => {
           this.messageShortLinkGet = "Error.";
 
-          console.log("modelTargetGetResponce" + this.modelTargetGetResponce);
           this.onCaptchaOrder();
         }
       )
@@ -173,7 +171,7 @@ export class PopupComponent implements OnInit {
     this.modelTargetSetResponceSetFile = new LinkManagementTargetShortLinkSetResponceModel();
     this.modelTargetSetResponceSetDescription = new LinkManagementTargetShortLinkSetResponceModel();
     this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
-    this.modelTargetSetDto.CaptchaKey = this.captchaModel.Key;
+
     this.subManager.add(
       this.cmsService.ServiceShortLinkSet(this.modelTargetSetDto).subscribe(
         (next) => {
@@ -200,7 +198,6 @@ export class PopupComponent implements OnInit {
     this.modelTargetSetResponceSetFile = new LinkManagementTargetShortLinkSetResponceModel();
     this.modelTargetSetResponceSetDescription = new LinkManagementTargetShortLinkSetResponceModel();
     this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
-    this.modelTargetSetDto.CaptchaKey = this.captchaModel.Key;
     this.modelTargetSetDto.UrlAddress = "";
     this.modelTargetSetDto.UploadFileKey = "";
     this.subManager.add(
@@ -228,9 +225,8 @@ export class PopupComponent implements OnInit {
     this.modelTargetSetResponceSetFile = new LinkManagementTargetShortLinkSetResponceModel();
     this.modelTargetSetResponceSetDescription = new LinkManagementTargetShortLinkSetResponceModel();
     this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
-    this.modelTargetSetDto.CaptchaKey = this.captchaModel.Key;
     this.modelTargetSetDto.UrlAddress = "";
-    this.modelTargetSetDto.UploadFileKey = "";
+    this.modelTargetSetDto.Description = "";
     this.subManager.add(
       this.cmsService.ServiceShortLinkSet(this.modelTargetSetDto).subscribe(
         (next) => {
@@ -249,31 +245,8 @@ export class PopupComponent implements OnInit {
       )
     );
   }
-  handleProgress(progress) {
-    this.progress = progress;
-  }
-  handleFileInput(files: FileList) {
-    this.fileToUpload = files.item(0);
-    // this.cmsService
-    //        .ServiceUploadFile(this.fileToUpload, (x) => this.handleProgress(x))
 
-    this.subManager.add(
-      this.cmsService
-        .ServiceUploadFileNormal(
-          this.fileToUpload,
-          this.fileToUpload.name,
-          (x) => this.handleProgress(x)
-        )
-        .subscribe(
-          (next) => {
-            this.modelTargetSetDto.UploadFileKey = next + "";
-          },
-          (error) => {}
-        )
-    );
-  }
   tabChange(selectedTab) {
-    console.log("### tab change");
     this.selectedUserTab = selectedTab.key;
     for (let tab of this.tabs) {
       if (tab.key === selectedTab.key) {

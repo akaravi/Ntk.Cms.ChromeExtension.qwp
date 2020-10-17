@@ -5,10 +5,15 @@ import {
   ViewChild,
   ChangeDetectorRef,
   ChangeDetectionStrategy,
+  Input,
 } from "@angular/core";
 import { FlowDirective, Transfer } from "@flowjs/ngx-flow";
 import { Subscription } from "rxjs";
-const URL = "http://localhost:2390/api/v1/FileContent/Upload/";
+import { ComponentOptionModel } from 'src/app/models/componentOptionModel';
+import { environment } from 'src/environments/environment';
+
+const URL = environment.configApiServerPath+"/FileContent/Upload/";
+//const URL = "http://localhost:2390/api/v1/FileContent/Upload/";
 @Component({
   selector: "app-upload-file",
   templateUrl: "./upload-file.component.html",
@@ -17,6 +22,15 @@ const URL = "http://localhost:2390/api/v1/FileContent/Upload/";
 })
 export class UploadFileComponent implements AfterViewInit, OnInit {
   constructor(private cd: ChangeDetectorRef) {}
+  @Input()
+  set options(model: ComponentOptionModel) {
+    this.dateOptionInput = model;  
+  }
+  get options(): ComponentOptionModel {
+    return this.dateOptionInput;
+  }
+  private dateOptionInput: ComponentOptionModel=new ComponentOptionModel();
+
   @ViewChild("flow", { static: false })
   flow: FlowDirective;
   autoUploadSubscription: Subscription;
@@ -29,16 +43,12 @@ export class UploadFileComponent implements AfterViewInit, OnInit {
         if (flowFile.myparams) {
           return flowFile.myparams;
         }
-        // generate some values
+        //console.log(flowChunk.offset)
 
+        // generate some values
         flowFile.myparams = {
-          ChunkNumber: flowChunk.offset + 1,
-          ChunkSize: flowChunk.flowObj.opts.chunkSize,
-          CurrentChunkSize: flowChunk.endByte - flowChunk.startByte,
-          TotalSize: flowChunk.fileObj.size,
-          Identifier: flowChunk.fileObj.uniqueIdentifier,
           Filename: flowChunk.fileObj.name,
-          RelativePath: flowChunk.fileObj.relativePath,
+          Identifier: flowChunk.fileObj.uniqueIdentifier,
           TotalChunks: flowChunk.fileObj.chunks.length,
         };
         return flowFile.myparams;
@@ -49,6 +59,7 @@ export class UploadFileComponent implements AfterViewInit, OnInit {
 
   ngAfterViewInit() {
     this.autoUploadSubscription = this.flow.events$.subscribe((event) => {
+      console.log("event",event);
       switch (event.type) {
         case "filesSubmitted":
           return this.flow.upload();
@@ -60,10 +71,18 @@ export class UploadFileComponent implements AfterViewInit, OnInit {
     });
   }
   fileSuccess(event: any) {
-    console.log("event", event);
     if (event && event.event) {
-      console.log("name", event.event[0].name);
-      console.log("responce", event.event[1]);
+      
+      if (this.dateOptionInput && this.dateOptionInput.actions && this.dateOptionInput.actions.onActionSelect) {
+        const model={
+          fileName:event.event[0].name,
+          fileKey:event.event[1]
+        }
+      
+
+        this.dateOptionInput.actions.onActionSelect(model);
+        this.dateOptionInput.dataModel={Select:model};
+      }
     }
   }
   trackTransfer(transfer: Transfer) {
