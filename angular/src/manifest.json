@@ -6,9 +6,7 @@
     "description": "quick website page",
     "permissions": [
         "*://apicms.ir/*",
-        "storage",
-        "activeTab",
-        "notifications"
+        "activeTab"
     ],
     "browser_action": {
         "default_icon": "assets/images/qwp48.png",
