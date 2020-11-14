@@ -37,7 +37,7 @@
                                             Key must be at least 8 characters long.
                                         </div>
                                     </div>
-                                    <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
+                                    <img src="{{captchaModel.Image}}" (click)="onCaptchaOrder()">
                                     <input [(ngModel)]="modelTargetGetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextGet="ngModel" autocomplete="off" class="form-control input-ntk mb-3" placeholder="Captcha Text" required />
                                     <div *ngIf="captchaTextGet.invalid && (captchaTextGet.dirty || captchaTextGet.touched)" class="alert alert-danger">
                                         <div *ngIf="captchaTextGet.errors.required">
@@ -125,7 +125,7 @@
                                             Url must be at least 6 characters long.
                                         </div>
                                     </div>
-                                    <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
+                                    <img src="{{captchaModel.Image}}" (click)="onCaptchaOrder()">
                                     <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextSetUrlAddress="ngModel" autocomplete="off" class="form-control input-ntk mb-3" placeholder="Captcha Text" required />
                                     <div *ngIf="captchaTextSetUrlAddress.invalid && (captchaTextSetUrlAddress.dirty || captchaTextSetUrlAddress.touched)" class="alert alert-danger">
                                         <div *ngIf="captchaTextSetUrlAddress.errors.required">
@@ -185,7 +185,7 @@
                                         {{uploadedfileName}}
                                     </div>
 
-                                    <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
+                                    <img src="{{captchaModel.Image}}" (click)="onCaptchaOrder()">
                                     <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextSetFile="ngModel" autocomplete="off" class="form-control input-ntk mb-3" placeholder="Captcha Text" required />
                                     <div *ngIf="captchaTextSetFile.invalid && (captchaTextSetFile.dirty || captchaTextSetFile.touched)" class="alert alert-danger">
                                         <div *ngIf="captchaTextSetFile.errors.required">
@@ -245,7 +245,7 @@
                                             Url must be at least 6 characters long.
                                         </div>
                                     </div>
-                                    <img src="{{captchaModel.image}}" (click)="onCaptchaOrder()">
+                                    <img src="{{captchaModel.Image}}" (click)="onCaptchaOrder()">
                                     <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextSetDescription="ngModel" autocomplete="off" class="form-control input-ntk mb-3" placeholder="Captcha Text" required />
                                     <div *ngIf="captchaTextSetDescription.invalid && (captchaTextSetDescription.dirty || captchaTextSetDescription.touched)" class="alert alert-danger">
                                         <div *ngIf="captchaTextSetDescription.errors.required">
@@ -287,17 +287,3 @@
 
 
 </div>
-
-
-<!-- 
-
-
-<button (click)="onClick()">Click me to test</button>
-modelTargetSetDto:
-{{modelTargetSetDto | json}}
-<br />
-modelTargetGetDto:
-{{modelTargetGetDto | json}}
-<br />
-modelTargetSetResponce:
-{{modelTargetSetResponce | json}}-->

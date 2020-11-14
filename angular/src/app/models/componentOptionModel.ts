@@ -1,5 +1,5 @@
 export class ComponentOptionModel {
   actions: any;
-  methods:any;
-  dataModel:any;
+  methods: any;
+  data: any;
 }

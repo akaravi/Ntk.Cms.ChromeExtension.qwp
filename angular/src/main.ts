@@ -13,11 +13,11 @@ chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
 
   const tab = [...tabs].pop();
   const { id: tabId } = tab;
- 
- 
+
+
 
   // provides the current Tab ID so you can send messages to the content page
-  platformBrowserDynamic([{ provide: TAB_ID, useValue: tabId },{ provide: TAB, useValue: tab }])
+  platformBrowserDynamic([{ provide: TAB_ID, useValue: tabId }, { provide: TAB, useValue: tab }])
     .bootstrapModule(AppModule)
     .catch(error => console.error(error));
 });
