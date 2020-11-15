@@ -1,4 +1,5 @@
-import { Flow } from '@flowjs/flow.js';
+import { FileUploadComponent } from './pages/upload-file/fileUpload.component';
+import Flow from '@flowjs/flow.js';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
@@ -14,7 +15,7 @@ import { environment } from 'src/environments/environment';
 
 import { OptionsComponent } from './pages/options/options.component';
 import { PopupComponent } from './pages/popup/popup.component';
-import { UploadFileComponent } from './pages/upload-file/upload-file.component';
+
 import { FlowInjectionToken, NgxFlowModule } from '@flowjs/ngx-flow';
 
 
@@ -24,7 +25,7 @@ import { FlowInjectionToken, NgxFlowModule } from '@flowjs/ngx-flow';
     AppComponent,
     PopupComponent,
     OptionsComponent,
-    UploadFileComponent
+    FileUploadComponent
   ],
   imports: [
     BrowserModule,
@@ -33,7 +34,6 @@ import { FlowInjectionToken, NgxFlowModule } from '@flowjs/ngx-flow';
     NgxFlowModule,
     BrowserAnimationsModule,
     HttpClientModule,
-
   ],
   bootstrap: [AppComponent],
   providers: [

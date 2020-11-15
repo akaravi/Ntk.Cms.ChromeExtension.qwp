@@ -15,6 +15,15 @@
     "default_title": "qwp Set And Get Short Link"
   },
   "options_page": "index.html?#/options",
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+Q",
+        "mac": "MacCtrl+Q"
+      },
+      "description": "Opens hello.html"
+    }
+  },
   "content_scripts": [
     {
       "js": [

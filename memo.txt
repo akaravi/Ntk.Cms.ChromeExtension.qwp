@@ -1,0 +1,7 @@
+npm run start
+
+
+==================================================
+npm run build:production
+ cd angular/dist
+ bestzip ../../extension-build.zip *

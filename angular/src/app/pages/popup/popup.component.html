@@ -1,289 +1,451 @@
 <div class="col-md-12">
-    <p><strong>{{ message }}</strong></p>
-    <!-- {{modelTargetSetDto | json}} -->
-    <div class="col-xs-3" style="padding-left: 4px;padding-right: 0px;">
-        <ul class="nav nav-tabs tabs-left">
-            <li [ngClass]="{'active': tab.active}" *ngFor="let tab of tabs">
-                <a (click)="tabChange(tab)" [innerHTML]="tab.name">
-                </a>
-            </li>
-        </ul>
-    </div>
+  <!-- {{modelTargetSetDto | json}} -->
+  <div class="col-xs-3" style="padding-left: 4px; padding-right: 0px">
+    <ul class="nav nav-tabs tabs-left">
+      <li [ngClass]="{ active: tab.active }" *ngFor="let tab of tabs">
+        <a (click)="tabChange(tab)" [innerHTML]="tab.name"> </a>
+      </li>
+    </ul>
+  </div>
 
-    <div class="col-xs-9" style="padding-left: 2px;padding-right: 2px;">
-        <div class="tab-content">
-            <div class="tab-pane active" [ngClass]="{'showTab':selectedUserTab == 1, 'hideTab':selectedUserTab != 1}">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i style="color: deepskyblue">Get </i> <b style="color: deeppink">Short Link </b>
-                        <i style="color: rgb(8, 39, 65)">qwp.ir</i>
+  <div class="col-xs-9" style="padding-left: 2px; padding-right: 2px">
+    <div class="tab-content">
+      <div class="tab-pane" [ngClass]="{
+          showTab: selectedUserTab == 1,
+          hideTab: selectedUserTab != 1
+        }">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <i style="color: deepskyblue">Get </i>
+            <b style="color: deeppink">Short Link </b>
+            <i style="color: rgb(8, 39, 65)">qwp.ir</i>
+          </div>
+          <div class="panel-body">
+            <form #registerForm="ngForm" (ngSubmit)="onSubmitGet()" aria-labelledby="title">
+              <div class="row m-0">
+                <div class="col-lg-12" *ngIf="!modelTargetGetResponce.Key || modelTargetGetResponce.Key.length == 0">
+                  <h5>you can Get Created Short Link Onnly By Key</h5>
+                  <label for="key">Your Short Link Key:</label>
+                  <input [(ngModel)]="modelTargetGetDto.Key" id="key" name="Key" type="text"
+                         class="form-control input-ntk mb-3" placeholder="***@*****" #Key="ngModel" minlength="8"
+                         required/>
+                  <div *ngIf="Key.invalid && (Key.dirty || Key.touched)" class="alert alert-danger">
+                    <div *ngIf="Key.errors.required">Key is required.</div>
+                    <div *ngIf="Key.errors.minlength">
+                      Key must be at least 8 characters long.
                     </div>
-                    <div class="panel-body">
-                        <form #registerForm="ngForm" (ngSubmit)="onSubmitGet()" aria-labelledby="title">
+                  </div>
 
-                            <div class="row m-0">
-                                <div class="col-lg-12" *ngIf="!modelTargetGetResponce.Key||modelTargetGetResponce.Key.length==0">
+                  <img src="{{ captchaModel.Image }}" (click)="onCaptchaOrder()"/>
+                  <input [(ngModel)]="modelTargetGetDto.CaptchaText" type="captchaText" name="captchaText"
+                         #captchaTextGet="ngModel" autocomplete="off" class="form-control input-ntk mb-3"
+                         placeholder="Captcha Text" required/>
+                  <div *ngIf="captchaTextGet.invalid && (captchaTextGet.dirty || captchaTextGet.touched) "class="alert alert-danger">
+                    <div *ngIf="captchaTextGet.errors.required">
+                      captcha Text is required.
+                    </div>
+                  </div>
+                  <button [disabled]="!modelTargetGetDto.Key || modelTargetGetDto.Key.length < 8" class="btn btn-primary" style="width: 100%">
+                    Get Link
+                  </button>
 
-                                    <h5>
-                                        you can Get Created Short Link Onnly By Key
-                                    </h5>
-                                    <label for="key">Your Short Link Key:</label>
-                                    <input [(ngModel)]="modelTargetGetDto.Key" id="key" name="Key" type="text" class="form-control input-ntk mb-3" placeholder="***@*****" #Key="ngModel" minlength="8" required />
-                                    <div *ngIf="Key.invalid && (Key.dirty || Key.touched)" class="alert alert-danger">
-                                        <div *ngIf="Key.errors.required">
-                                            Key is required.
-                                        </div>
-                                        <div *ngIf="Key.errors.minlength">
-                                            Key must be at least 8 characters long.
-                                        </div>
-                                    </div>
-                                    <img src="{{captchaModel.Image}}" (click)="onCaptchaOrder()">
-                                    <input [(ngModel)]="modelTargetGetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextGet="ngModel" autocomplete="off" class="form-control input-ntk mb-3" placeholder="Captcha Text" required />
-                                    <div *ngIf="captchaTextGet.invalid && (captchaTextGet.dirty || captchaTextGet.touched)" class="alert alert-danger">
-                                        <div *ngIf="captchaTextGet.errors.required">
-                                            captcha Text is required.
-                                        </div>
-                                    </div>
-                                    <button [disabled]="!modelTargetGetDto.Key || modelTargetGetDto.Key.length < 8" class="btn btn-primary" style="width: 100%;">Get Link</button>
+                  <p style="color: deeppink">{{ messageShortLinkGet }}</p>
+                  <p>
+                    <strong style="color: deeppink">{{ message }}</strong>
+                  </p>
+                </div>
 
-                                    <p>{{messageShortLinkGet}}</p>
-                                </div>
-
-                                <!--View Get-->
-                                <div class="col-lg-12" *ngIf="modelTargetGetResponce && modelTargetGetResponce.Key&& modelTargetGetResponce.Key.length>0">
-                                    <div class="input-group-button">
-                                        <h4 class="card-title mb-2">Key: {{modelTargetGetResponce.Key}} <svg (click)="copyText(modelTargetGetResponce.Key)" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
-                                                <path fill-rule="evenodd" d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
-                                            </svg></h4>
-
-                                    </div>
-                                    <h4 class="card-title mb-2" *ngIf="modelTargetGetResponce.Description">
+                <!--View Get-->
+                <div class="col-lg-12" *ngIf="
+                    modelTargetGetResponce &&
+                    modelTargetGetResponce.Key &&
+                    modelTargetGetResponce.Key.length > 0
+                  ">
+                  <div class="input-group-button">
+                    <h4 class="card-title mb-2">
+                      Key: {{ modelTargetGetResponce.Key }}
+                      <svg (click)="copyText(modelTargetGetResponce.Key)" viewBox="0 0 16 16" version="1.1" width="16"
+                           height="16" aria-hidden="true">
+                        <path fill-rule="evenodd"
+                              d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
+                      </svg>
+                    </h4>
+                  </div>
+                  <h4 class="card-title mb-2" *ngIf="modelTargetGetResponce.Description">
                                         <textarea>
-                                        {{modelTargetGetResponce.Description}}
+                                        {{ modelTargetGetResponce.Description }}
                                         </textarea>
-                                        <svg (click)="copyText(modelTargetGetResponce.Description)" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
-                                        </svg>
-                                    </h4>
-                                    <h4 class="card-title mb-2" *ngIf="modelTargetGetResponce.UrlAddress">
-                                        <input value="{{modelTargetGetResponce.UrlAddress}}" type="text" readonly class="form-control input-ntk mb-3" />
-                                        <a href="{{modelTargetGetResponce.UrlAddress}}" target=”_blank”>
-                                            <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
-                                                <path fill-rule="evenodd" d="M1.5 8a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0zM8 0a8 8 0 100 16A8 8 0 008 0zM6.379 5.227A.25.25 0 006 5.442v5.117a.25.25 0 00.379.214l4.264-2.559a.25.25 0 000-.428L6.379 5.227z"></path>
-                                            </svg>
-                                        </a>
-                                        <svg (click)="copyText(modelTargetGetResponce.UrlAddress)" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
-                                        </svg>
-                                    </h4>
-                                    <h4 class="card-title mb-2" *ngIf="modelTargetGetResponce.ShortLinkUrl">
-                                        <a href="{{modelTargetGetResponce.ShortLinkUrl}}" target=”_blank”>
-                                            {{modelTargetGetResponce.ShortLinkUrl}}
-                                        </a>
-                                        <svg (click)="copyText(modelTargetGetResponce.ShortLinkUrl)" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
-                                        </svg>
-                                    </h4>
-                                    <div *ngIf="modelTargetGetResponce.ShortLinkQRCodeBase64">
-                                        <a href="{{modelTargetGetResponce.ShortLinkUrl}}" target=”_blank”>
-                                            <img src="{{modelTargetGetResponce.ShortLinkQRCodeBase64}}" style="width:200px">
-                                        </a>
-                                    </div>
-                                </div>
-                                <!--View Get-->
-                            </div>
-
-                        </form>
-                    </div>
+                    <svg (click)="copyText(modelTargetGetResponce.Description)" viewBox="0 0 16 16" version="1.1"
+                         width="16" height="16" aria-hidden="true">
+                      <path fill-rule="evenodd"
+                            d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
+                    </svg>
+                  </h4>
+                  <h4 class="card-title mb-2" *ngIf="modelTargetGetResponce.UrlAddress">
+                    <input value="{{ modelTargetGetResponce.UrlAddress }}" type="text" readonly
+                           class="form-control input-ntk mb-3"/>
+                    <a href="{{ modelTargetGetResponce.UrlAddress }}" target="”_blank”">
+                      <svg viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
+                        <path fill-rule="evenodd"
+                              d="M1.5 8a6.5 6.5 0 1113 0 6.5 6.5 0 01-13 0zM8 0a8 8 0 100 16A8 8 0 008 0zM6.379 5.227A.25.25 0 006 5.442v5.117a.25.25 0 00.379.214l4.264-2.559a.25.25 0 000-.428L6.379 5.227z"></path>
+                      </svg>
+                    </a>
+                    <svg (click)="copyText(modelTargetGetResponce.UrlAddress)" viewBox="0 0 16 16" version="1.1"
+                         width="16" height="16" aria-hidden="true">
+                      <path fill-rule="evenodd"
+                            d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
+                    </svg>
+                  </h4>
+                  <div *ngIf="
+                      modelTargetGetResponce.FilesSrc &&
+                      modelTargetGetResponce.FilesSrc.length > 0
+                    ">
+                    <a *ngFor="let file of modelTargetGetResponce.FilesSrc" href="{{ file }}" target="”_blank”">
+                      {{ file }}
+                    </a>
+                  </div>
+                  <h4 class="card-title mb-2" *ngIf="modelTargetGetResponce.ShortLinkUrl">
+                    <a class="subLink" href="{{ modelTargetGetResponce.ShortLinkUrl }}" target="”_blank”">
+                      {{ modelTargetGetResponce.ShortLinkUrl }}
+                    </a>
+                    <svg (click)="copyText(modelTargetGetResponce.ShortLinkUrl)" viewBox="0 0 16 16" version="1.1"
+                         width="16" height="16" aria-hidden="true">
+                      <path fill-rule="evenodd"
+                            d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
+                    </svg>
+                  </h4>
+                  <div *ngIf="modelTargetGetResponce.ShortLinkQRCodeBase64">
+                    <a href="{{ modelTargetGetResponce.ShortLinkUrl }}" target="”_blank”">
+                      <img src="{{ modelTargetGetResponce.ShortLinkQRCodeBase64 }}" style="width: 195px"/>
+                    </a>
+                  </div>
                 </div>
-                <!-- Profile tab -->
-
-            </div>
-
-            <div class="tab-pane active" [ngClass]="{'showTab':selectedUserTab == 2, 'hideTab':selectedUserTab != 2}">
-                <!-- Change password tab -->
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i style="color: deepskyblue">Set </i> <b style="color: deeppink">Short Link </b>
-                        <i style="color: rgb(8, 39, 65)">qwp.ir</i>
-
-
-
-                    </div>
-                    <div class="panel-body">
-                        <form #registerForm="ngForm" (ngSubmit)="onSubmitSetLink()">
-                            <div class="row m-0">
-
-                                <div class="col-lg-12" *ngIf="!modelTargetSetResponceSetLink.Key||modelTargetSetResponceSetLink.Key.length==0">
-                                    <input [(ngModel)]="modelTargetSetDto.UrlAddress" name="UrlAddress" #UrlAddress="ngModel" required minlength="6" type="text" class="form-control input-ntk mb-3" placeholder="Url Address" required />
-
-                                    <div *ngIf="UrlAddress.invalid && (UrlAddress.dirty || UrlAddress.touched)" class="alert alert-danger">
-                                        <div *ngIf="UrlAddress.errors.required">
-                                            Url is required.
-                                        </div>
-                                        <div *ngIf="UrlAddress.errors.minlength">
-                                            Url must be at least 6 characters long.
-                                        </div>
-                                    </div>
-                                    <img src="{{captchaModel.Image}}" (click)="onCaptchaOrder()">
-                                    <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextSetUrlAddress="ngModel" autocomplete="off" class="form-control input-ntk mb-3" placeholder="Captcha Text" required />
-                                    <div *ngIf="captchaTextSetUrlAddress.invalid && (captchaTextSetUrlAddress.dirty || captchaTextSetUrlAddress.touched)" class="alert alert-danger">
-                                        <div *ngIf="captchaTextSetUrlAddress.errors.required">
-                                            captcha Text is required.
-                                        </div>
-                                    </div>
-                                    <button [disabled]="!modelTargetSetDto.UrlAddress || modelTargetSetDto.UrlAddress.length < 5" class="btn btn-primary" style="width: 100%;">Set Link</button>
-
-                                    <p>{{messageShortLinkSetLink}}</p>
-                                </div>
-                                <!--View Set-->
-                                <div class="col-lg-12" *ngIf="modelTargetSetResponceSetLink && modelTargetSetResponceSetLink.Key&& modelTargetSetResponceSetLink.Key.length>0">
-                                    <h4 class="card-title mb-2">Key: {{modelTargetSetResponceSetLink.Key}} <svg (click)="copyText(modelTargetSetResponceSetLink.Key)" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
-                                        </svg></h4>
-                                    <h4 class="card-title mb-2" *ngIf="modelTargetSetResponceSetLink.ShortLinkUrl">
-                                        <a href="{{modelTargetSetResponceSetLink.ShortLinkUrl}}" target=”_blank”>
-                                            {{modelTargetSetResponceSetLink.ShortLinkUrl}}
-                                        </a>
-                                        <svg (click)="copyText(modelTargetSetResponceSetLink.ShortLinkUrl)" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
-                                        </svg>
-                                    </h4>
-                                    <div *ngIf="modelTargetSetResponceSetLink.ShortLinkQRCodeBase64">
-                                        <a href="{{modelTargetSetResponceSetLink.ShortLinkUrl}}" target=”_blank”>
-                                            <img src="{{modelTargetSetResponceSetLink.ShortLinkQRCodeBase64}}" style="width:200px">
-                                        </a>
-                                    </div>
-                                </div>
-                                <!--View Set-->
-
-
-                            </div>
-
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-pane active" [ngClass]="{'showTab':selectedUserTab == 3, 'hideTab':selectedUserTab != 3}">
-                <!-- Admin tab -->
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i style="color: deepskyblue">Set </i> <b style="color: deeppink">File Short Link</b>
-                    </div>
-                    <div class="panel-body">
-                        <form #registerForm="ngForm" (ngSubmit)="onSubmitSetFile()">
-                            <div class="row m-0">
-
-                                <div class="col-lg-12" *ngIf="!modelTargetSetResponceSetFile.Key||modelTargetSetResponceSetFile.Key.length==0 ">
-                                    <div *ngIf="uploadedfileKey.length==0">
-                                        <app-upload-file [options]="optionsUploadFile"></app-upload-file>
-                                    </div>
-                                    <div *ngIf="uploadedfileKey.length>0">
-                                        ✅ Uploaded you file.
-                                        <br>
-                                        {{uploadedfileName}}
-                                    </div>
-
-                                    <img src="{{captchaModel.Image}}" (click)="onCaptchaOrder()">
-                                    <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextSetFile="ngModel" autocomplete="off" class="form-control input-ntk mb-3" placeholder="Captcha Text" required />
-                                    <div *ngIf="captchaTextSetFile.invalid && (captchaTextSetFile.dirty || captchaTextSetFile.touched)" class="alert alert-danger">
-                                        <div *ngIf="captchaTextSetFile.errors.required">
-                                            captcha Text is required.
-                                        </div>
-                                    </div>
-                                    <button [disabled]="!modelTargetSetDto.UploadFileKey || modelTargetSetDto.UploadFileKey.length < 5" class="btn btn-primary" style="width: 100%;">Set Link</button>
-                                    <p>{{messageShortLinkSetFile}}</p>
-                                </div>
-                                <!--View Set-->
-                                <div class="col-lg-12" *ngIf="modelTargetSetResponceSetFile && modelTargetSetResponceSetFile.Key&& modelTargetSetResponceSetFile.Key.length>0">
-                                    <h4 class="card-title mb-2">Key: {{modelTargetSetResponceSetFile.Key}} <svg (click)="copyText(modelTargetSetResponceSetFile.Key)" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
-                                        </svg></h4>
-                                    <h4 class="card-title mb-2" *ngIf="modelTargetSetResponceSetFile.ShortLinkUrl">
-                                        <a href="{{modelTargetSetResponceSetFile.ShortLinkUrl}}" target=”_blank”>
-                                            {{modelTargetSetResponceSetFile.ShortLinkUrl}}
-                                        </a>
-                                        <svg (click)="copyText(modelTargetSetResponceSetFile.ShortLinkUrl)" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
-                                        </svg>
-                                    </h4>
-                                    <div *ngIf="modelTargetSetResponceSetFile.ShortLinkQRCodeBase64">
-                                        <a href="{{modelTargetSetResponceSetFile.ShortLinkUrl}}" target=”_blank”>
-                                            <img src="{{modelTargetSetResponceSetFile.ShortLinkQRCodeBase64}}" style="width:200px">
-                                        </a>
-                                    </div>
-                                </div>
-                                <!--View Set-->
-                            </div>
-
-
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-pane active" [ngClass]="{'showTab':selectedUserTab == 4, 'hideTab':selectedUserTab != 4}">
-                <!-- stripe account tab -->
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <i style="color: deepskyblue">Set </i> <b style="color: deeppink">Memo Short Link</b>
-                    </div>
-                    <div class="panel-body">
-                        <form #registerForm="ngForm" (ngSubmit)="onSubmitSetDescription()">
-                            <div class="row m-0">
-
-                                <div class="col-lg-12" *ngIf="!modelTargetSetResponceSetDescription.Key||modelTargetSetResponceSetDescription.Key.length==0">
-                                    <textarea [(ngModel)]="modelTargetSetDto.Description" name="Description" #Description="ngModel" required minlength="6" type="text" class="form-control input-ntk mb-3" placeholder="Yoy Text And Memo" required>
-
-                                        </textarea>
-                                    <div *ngIf="Description.invalid && (Description.dirty || Description.touched)" class="alert alert-danger">
-                                        <div *ngIf="Description.errors.required">
-                                            Description is required.
-                                        </div>
-                                        <div *ngIf="Description.errors.minlength">
-                                            Url must be at least 6 characters long.
-                                        </div>
-                                    </div>
-                                    <img src="{{captchaModel.Image}}" (click)="onCaptchaOrder()">
-                                    <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText" #captchaTextSetDescription="ngModel" autocomplete="off" class="form-control input-ntk mb-3" placeholder="Captcha Text" required />
-                                    <div *ngIf="captchaTextSetDescription.invalid && (captchaTextSetDescription.dirty || captchaTextSetDescription.touched)" class="alert alert-danger">
-                                        <div *ngIf="captchaTextSetDescription.errors.required">
-                                            captcha Text is required.
-                                        </div>
-                                    </div>
-                                    <button [disabled]="!modelTargetSetDto.Description || modelTargetSetDto.Description.length < 5" class="btn btn-primary" style="width: 100%;">Set Link</button>
-                                    <p>{{messageShortLinkSetDescription}}</p>
-                                </div>
-                                <!--View Set-->
-                                <div class="col-lg-12" *ngIf="modelTargetSetResponceSetDescription && modelTargetSetResponceSetDescription.Key&& modelTargetSetResponceSetDescription.Key.length>0">
-                                    <h4 class="card-title mb-2">Key: {{modelTargetSetResponceSetDescription.Key}} <svg (click)="copyText(modelTargetSetResponceSetDescription.Key)" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
-                                        </svg></h4>
-                                    <h4 class="card-title mb-2" *ngIf="modelTargetSetResponceSetDescription.ShortLinkUrl">
-                                        <a href="{{modelTargetSetResponceSetDescription.ShortLinkUrl}}" target=”_blank”>
-                                            {{modelTargetSetResponceSetDescription.ShortLinkUrl}}
-                                        </a>
-                                        <svg (click)="copyText(modelTargetSetResponceSetDescription.ShortLinkUrl)" viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
-                                            <path fill-rule="evenodd" d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
-                                        </svg>
-                                    </h4>
-                                    <div *ngIf="modelTargetSetResponceSetDescription.ShortLinkQRCodeBase64">
-                                        <a href="{{modelTargetSetResponceSetDescription.ShortLinkUrl}}" target=”_blank”>
-                                            <img src="{{modelTargetSetResponceSetDescription.ShortLinkQRCodeBase64}}" style="width:200px">
-                                        </a>
-                                    </div>
-                                </div>
-                                <!--View Set-->
-                            </div>
-
-
-                        </form>
-                    </div>
-                </div>
-            </div>
+                <!--View Get-->
+              </div>
+            </form>
+          </div>
         </div>
+        <!-- Profile tab -->
+      </div>
+
+      <div class="tab-pane" [ngClass]="{
+          showTab: selectedUserTab == 2,
+          hideTab: selectedUserTab != 2
+        }">
+        <!-- Change password tab -->
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <i style="color: deepskyblue">Set </i>
+            <b style="color: deeppink">Short Link </b>
+            <i style="color: rgb(8, 39, 65)">qwp.ir</i>
+          </div>
+          <div class="panel-body">
+            <form #registerForm="ngForm" (ngSubmit)="onSubmitSetLink()">
+              <div class="row m-0">
+                <div class="col-lg-12" *ngIf="
+                    !modelTargetSetResponceSetLink.Key ||
+                    modelTargetSetResponceSetLink.Key.length == 0
+                  ">
+                  <input [(ngModel)]="modelTargetSetDto.UrlAddress" name="UrlAddress" #UrlAddress="ngModel" required
+                         minlength="6" type="text" class="form-control input-ntk mb-3" placeholder="Url Address"
+                         required/>
+
+                  <div *ngIf="
+                      UrlAddress.invalid &&
+                      (UrlAddress.dirty || UrlAddress.touched)
+                    " class="alert alert-danger">
+                    <div *ngIf="UrlAddress.errors.required">
+                      Url is required.
+                    </div>
+                    <div *ngIf="UrlAddress.errors.minlength">
+                      Url must be at least 6 characters long.
+                    </div>
+                  </div>
+                  <img src="{{ captchaModel.Image }}" (click)="onCaptchaOrder()"/>
+                  <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText"
+                         #captchaTextSetUrlAddress="ngModel" autocomplete="off" class="form-control input-ntk mb-3"
+                         placeholder="Captcha Text" required/>
+                  <div *ngIf="
+                      captchaTextSetUrlAddress.invalid &&
+                      (captchaTextSetUrlAddress.dirty ||
+                        captchaTextSetUrlAddress.touched)
+                    " class="alert alert-danger">
+                    <div *ngIf="captchaTextSetUrlAddress.errors.required">
+                      captcha Text is required.
+                    </div>
+                  </div>
+                  <button [disabled]="
+                      !modelTargetSetDto.UrlAddress ||
+                      modelTargetSetDto.UrlAddress.length < 5
+                    " class="btn btn-primary" style="width: 100%">
+                    Set Link
+                  </button>
+
+                  <p style="color: deeppink">{{ messageShortLinkSetLink }}</p>
+                  <p>
+                    <strong style="color: deeppink">{{ message }}</strong>
+                  </p>
+                </div>
+                <!--View Set-->
+                <div class="col-lg-12" *ngIf="
+                    modelTargetSetResponceSetLink &&
+                    modelTargetSetResponceSetLink.Key &&
+                    modelTargetSetResponceSetLink.Key.length > 0
+                  ">
+                  <h4 class="card-title mb-2">
+                    Key: {{ modelTargetSetResponceSetLink.Key }}
+                    <svg (click)="copyText(modelTargetSetResponceSetLink.Key)" viewBox="0 0 16 16" version="1.1"
+                         width="16" height="16" aria-hidden="true">
+                      <path fill-rule="evenodd"
+                            d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
+                    </svg>
+                  </h4>
+                  <h4 class="card-title mb-2" *ngIf="modelTargetSetResponceSetLink.ShortLinkUrl">
+                    <a href="{{ modelTargetSetResponceSetLink.ShortLinkUrl }}" target="”_blank”">
+                      {{ modelTargetSetResponceSetLink.ShortLinkUrl }}
+                    </a>
+                    <svg (click)="
+                        copyText(modelTargetSetResponceSetLink.ShortLinkUrl)
+                      " viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
+                      <path fill-rule="evenodd"
+                            d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
+                    </svg>
+                  </h4>
+                  <div *ngIf="modelTargetSetResponceSetLink.ShortLinkQRCodeBase64">
+                    <a href="{{ modelTargetSetResponceSetLink.ShortLinkUrl }}" target="”_blank”">
+                      <img src="{{
+                          modelTargetSetResponceSetLink.ShortLinkQRCodeBase64
+                        }}" style="width: 200px"/>
+                    </a>
+                  </div>
+                </div>
+                <!--View Set-->
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" [ngClass]="{
+          showTab: selectedUserTab == 3,
+          hideTab: selectedUserTab != 3
+        }">
+        <!-- Admin tab -->
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <i style="color: deepskyblue">Set </i>
+            <b style="color: deeppink">File Short Link</b>
+          </div>
+          <div class="panel-body">
+            <form #registerForm="ngForm" (ngSubmit)="onSubmitSetFile()">
+              <div class="row m-0">
+                <div class="col-lg-12" *ngIf="
+                    !modelTargetSetResponceSetFile.Key ||
+                    modelTargetSetResponceSetFile.Key.length == 0
+                  ">
+                  <div *ngIf="uploadedfileKey.length == 0">
+                    <app-file-upload [options]="optionsUploadFile"></app-file-upload>
+                  </div>
+                  <div *ngIf="uploadedfileKey.length > 0">
+                    ✅ Uploaded you file.
+                    <br/>
+                    {{ uploadedfileName }}
+                  </div>
+
+                  <img src="{{ captchaModel.Image }}" (click)="onCaptchaOrder()"/>
+                  <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText"
+                         #captchaTextSetFile="ngModel" autocomplete="off" class="form-control input-ntk mb-3"
+                         placeholder="Captcha Text" required/>
+                  <div *ngIf="
+                      captchaTextSetFile.invalid &&
+                      (captchaTextSetFile.dirty || captchaTextSetFile.touched)
+                    " class="alert alert-danger">
+                    <div *ngIf="captchaTextSetFile.errors.required">
+                      captcha Text is required.
+                    </div>
+                  </div>
+                  <button [disabled]="
+                      !modelTargetSetDto.UploadFileKey ||
+                      modelTargetSetDto.UploadFileKey.length < 5
+                    " class="btn btn-primary" style="width: 100%">
+                    Set Link
+                  </button>
+                  <p style="color: deeppink">{{ messageShortLinkSetFile }}</p>
+                  <p>
+                    <strong style="color: deeppink">{{ message }}</strong>
+                  </p>
+                </div>
+                <!--View Set-->
+                <div class="col-lg-12" *ngIf="
+                    modelTargetSetResponceSetFile &&
+                    modelTargetSetResponceSetFile.Key &&
+                    modelTargetSetResponceSetFile.Key.length > 0
+                  ">
+                  <h4 class="card-title mb-2">
+                    Key: {{ modelTargetSetResponceSetFile.Key }}
+                    <svg (click)="copyText(modelTargetSetResponceSetFile.Key)" viewBox="0 0 16 16" version="1.1"
+                         width="16" height="16" aria-hidden="true">
+                      <path fill-rule="evenodd"
+                            d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
+                    </svg>
+                  </h4>
+                  <h4 class="card-title mb-2" *ngIf="modelTargetSetResponceSetFile.ShortLinkUrl">
+                    <a href="{{ modelTargetSetResponceSetFile.ShortLinkUrl }}" target="”_blank”">
+                      {{ modelTargetSetResponceSetFile.ShortLinkUrl }}
+                    </a>
+                    <svg (click)="
+                        copyText(modelTargetSetResponceSetFile.ShortLinkUrl)
+                      " viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
+                      <path fill-rule="evenodd"
+                            d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
+                    </svg>
+                  </h4>
+                  <div *ngIf="modelTargetSetResponceSetFile.ShortLinkQRCodeBase64">
+                    <a href="{{ modelTargetSetResponceSetFile.ShortLinkUrl }}" target="”_blank”">
+                      <img src="{{
+                          modelTargetSetResponceSetFile.ShortLinkQRCodeBase64
+                        }}" style="width: 200px"/>
+                    </a>
+                  </div>
+                </div>
+                <!--View Set-->
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" [ngClass]="{
+          showTab: selectedUserTab == 4,
+          hideTab: selectedUserTab != 4
+        }">
+        <!-- stripe account tab -->
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <i style="color: deepskyblue">Set </i>
+            <b style="color: deeppink">Memo Short Link</b>
+          </div>
+          <div class="panel-body">
+            <form #registerForm="ngForm" (ngSubmit)="onSubmitSetDescription()">
+              <div class="row m-0">
+                <div class="col-lg-12" *ngIf="
+                    !modelTargetSetResponceSetDescription.Key ||
+                    modelTargetSetResponceSetDescription.Key.length == 0
+                  ">
+                                    <textarea [(ngModel)]="modelTargetSetDto.Description" name="Description"
+                                              #Description="ngModel" required minlength="6" type="text"
+                                              class="form-control input-ntk mb-3" placeholder="Yoy Text And Memo"
+                                              required>
+                  </textarea>
+                  <div *ngIf="
+                      Description.invalid &&
+                      (Description.dirty || Description.touched)
+                    " class="alert alert-danger">
+                    <div *ngIf="Description.errors.required">
+                      Description is required.
+                    </div>
+                    <div *ngIf="Description.errors.minlength">
+                      Url must be at least 6 characters long.
+                    </div>
+                  </div>
+                  <img src="{{ captchaModel.Image }}" (click)="onCaptchaOrder()"/>
+                  <input [(ngModel)]="modelTargetSetDto.CaptchaText" type="captchaText" name="captchaText"
+                         #captchaTextSetDescription="ngModel" autocomplete="off" class="form-control input-ntk mb-3"
+                         placeholder="Captcha Text" required/>
+                  <div *ngIf="
+                      captchaTextSetDescription.invalid &&
+                      (captchaTextSetDescription.dirty ||
+                        captchaTextSetDescription.touched)
+                    " class="alert alert-danger">
+                    <div *ngIf="captchaTextSetDescription.errors.required">
+                      captcha Text is required.
+                    </div>
+                  </div>
+                  <button [disabled]="
+                      !modelTargetSetDto.Description ||
+                      modelTargetSetDto.Description.length < 5
+                    " class="btn btn-primary" style="width: 100%">
+                    Set Link
+                  </button>
+                  <p style="color: deeppink">
+                    {{ messageShortLinkSetDescription }}
+                  </p>
+                  <p>
+                    <strong style="color: deeppink">{{ message }}</strong>
+                  </p>
+                </div>
+                <!--View Set-->
+                <div class="col-lg-12" *ngIf="
+                    modelTargetSetResponceSetDescription &&
+                    modelTargetSetResponceSetDescription.Key &&
+                    modelTargetSetResponceSetDescription.Key.length > 0
+                  ">
+                  <h4 class="card-title mb-2">
+                    Key: {{ modelTargetSetResponceSetDescription.Key }}
+                    <svg (click)="
+                        copyText(modelTargetSetResponceSetDescription.Key)
+                      " viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
+                      <path fill-rule="evenodd"
+                            d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
+                    </svg>
+                  </h4>
+                  <h4 class="card-title mb-2" *ngIf="modelTargetSetResponceSetDescription.ShortLinkUrl">
+                    <a href="{{
+                        modelTargetSetResponceSetDescription.ShortLinkUrl
+                      }}" target="”_blank”">
+                      {{ modelTargetSetResponceSetDescription.ShortLinkUrl }}
+                    </a>
+                    <svg (click)="
+                        copyText(
+                          modelTargetSetResponceSetDescription.ShortLinkUrl
+                        )
+                      " viewBox="0 0 16 16" version="1.1" width="16" height="16" aria-hidden="true">
+                      <path fill-rule="evenodd"
+                            d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
+                    </svg>
+                  </h4>
+                  <div *ngIf="
+                      modelTargetSetResponceSetDescription.ShortLinkQRCodeBase64
+                    ">
+                    <a href="{{
+                        modelTargetSetResponceSetDescription.ShortLinkUrl
+                      }}" target="”_blank”">
+                      <img src="{{
+                          modelTargetSetResponceSetDescription.ShortLinkQRCodeBase64
+                        }}" style="width: 200px"/>
+                    </a>
+                  </div>
+                </div>
+                <!--View Set-->
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-pane" [ngClass]="{
+          showTab: selectedUserTab == 5,
+          hideTab: selectedUserTab != 5
+        }">
+        <!-- stripe account tab -->
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <i style="color: deepskyblue">Key </i>
+            <b style="color: deeppink">History</b>
+
+          </div>
+          <div class="panel-body">
+            <div *ngFor="let item of modelHistoryList" (click)="onClickHistory(item)">
+              {{ item }}
+              <svg (click)="onClickHistory(item)" viewBox="0 0 16 16" version="1.1"
+              width="16" height="16" aria-hidden="true">
+           <path fill-rule="evenodd"
+                 d="M5.75 1a.75.75 0 00-.75.75v3c0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75v-3a.75.75 0 00-.75-.75h-4.5zm.75 3V2.5h3V4h-3zm-2.874-.467a.75.75 0 00-.752-1.298A1.75 1.75 0 002 3.75v9.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0014 13.25v-9.5a1.75 1.75 0 00-.874-1.515.75.75 0 10-.752 1.298.25.25 0 01.126.217v9.5a.25.25 0 01-.25.25h-8.5a.25.25 0 01-.25-.25v-9.5a.25.25 0 01.126-.217z"></path>
+         </svg>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-
-
+  </div>
 </div>

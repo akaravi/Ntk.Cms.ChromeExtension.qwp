@@ -16,12 +16,12 @@ import { environment } from 'src/environments/environment';
 
 const URL = environment.cmsServerConfig.configRouteUploadFileContent;
 @Component({
-  selector: 'app-upload-file',
-  templateUrl: './upload-file.component.html',
-  styleUrls: ['./upload-file.component.scss'],
+  selector: 'app-file-upload',
+  templateUrl: './fileUpload.component.html',
+  styleUrls: ['./fileUpload.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UploadFileComponent implements AfterViewInit, OnInit , OnDestroy {
+export class FileUploadComponent implements AfterViewInit, OnInit , OnDestroy {
   constructor(private cd: ChangeDetectorRef) { }
   @Input()
   set options(model: ComponentOptionModel) {

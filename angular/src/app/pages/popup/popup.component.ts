@@ -3,7 +3,6 @@ import { TAB, TAB_ID } from 'src/app/providers/tab-id.provider';
 import {
   Component,
   Inject,
-  OnDestroy,
   OnInit,
 } from '@angular/core';
 import {
