@@ -54,13 +54,24 @@ export class AppModule {
     }
     const DeviceToken = this.coreAuthService.getDeviceToken();
     if (!DeviceToken || DeviceToken.length === 0) {
+
       const model: TokenDeviceClientInfoDtoModel = {
         SecurityKey: environment.cmsTokenConfig.SecurityKey,
         ClientMACAddress: '',
         OSType: EnumOperatingSystemType.Chromium,
-        DeviceType: EnumDeviceType.none,
+        DeviceType: EnumDeviceType.WebSite,
         PackageName: '',
+        AppBuildVer: 0,
+        AppSourceVer: '',
+        Country: '',
+        DeviceBrand: '',
+        Language: '',
+        LocationLat: '',
+        LocationLong: '',
+        NotificationId: '',
+        SimCard: '',
       };
+
 
 
       this.coreAuthService.ServiceGetTokenDevice(model).toPromise();
