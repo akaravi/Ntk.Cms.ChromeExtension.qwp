@@ -9,12 +9,13 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { FlowDirective, Transfer } from '@flowjs/ngx-flow';
+import { ErrorExceptionResult, FileUploadedModel } from 'ntk-cms-api';
 import { Subscription } from 'rxjs';
 import { ComponentOptionModel } from 'src/app/models/componentOptionModel';
 
 import { environment } from 'src/environments/environment';
 
-const URL = environment.cmsServerConfig.configRouteUploadFileContent;
+
 @Component({
   selector: 'app-file-upload',
   templateUrl: './fileUpload.component.html',
@@ -39,7 +40,7 @@ export class FileUploadComponent implements AfterViewInit, OnInit , OnDestroy {
   uploadViewImage = false;
   ngOnInit(): void {
     this.flowOption = {
-      target: URL,
+      target:  environment.cmsServerConfig.configRouteUploadFileContent,
       // tslint:disable-next-line: typedef
       query(flowFile, flowChunk) {
         if (flowFile.myparams) {
@@ -82,9 +83,11 @@ export class FileUploadComponent implements AfterViewInit, OnInit , OnDestroy {
           fileName: event.event[0].name,
           fileKey: event.event[1],
         };
-
-        this.dateOptionInput.actions.onActionSelect(model);
-        this.dateOptionInput.data = { Select: model };
+        debugger
+        const retUpload= JSON.parse( event.event[1]) as ErrorExceptionResult<FileUploadedModel>;
+        retUpload.Item.FileName=event.event[0].name
+        this.dateOptionInput.actions.onActionSelect(retUpload);
+        this.dateOptionInput.data = { Select: retUpload };
       }
     }
   }

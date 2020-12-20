@@ -8,6 +8,8 @@ import {
 import {
   CaptchaModel,
   CoreAuthService,
+  ErrorExceptionResult,
+  FileUploadedModel,
   LinkManagementTargetService,
   LinkManagementTargetShortLinkGetDtoModel,
   LinkManagementTargetShortLinkGetResponceModel,
@@ -89,28 +91,25 @@ export class PopupComponent implements OnInit {
   ];
   optionsUploadFile: ComponentOptionModel = new ComponentOptionModel();
   tokenInfoModel: TokenInfoModel;
-
+  aoutoCaptchaOrder = 1;
   ngOnInit() {
     this.optionsUploadFile.actions = {
       onActionSelect: (model) => this.onActionSelectFile(model),
     };
     this.getHistory();
-    this.optionsUploadFile.actions = {
-      onActionSelect: (model) => this.onActionSelectFile(model),
-    };
     this.onCaptchaOrder();
     if (this.tab) { this.modelTargetSetDto.UrlAddress = this.tab.url; }
   }
-  onActionSelectFile(model: any): void {
-    console.log('model', model);
+  onActionSelectFile(model: ErrorExceptionResult<FileUploadedModel>): void {
+    //console.log('model', model);
 
-    if (model && model.fileKey) {
-      this.modelTargetSetDto.UploadFileKey = model.fileKey;
-      this.uploadedfileName = model.fileName;
+    if (model &&model.IsSuccess && model.Item.FileKey) {
+      this.modelTargetSetDto.UploadFileGUID =model.Item.FileKey;
+      this.uploadedfileName = model.Item.FileName;
       if (this.uploadedfileKey.length > 0) {
         this.uploadedfileKey = this.uploadedfileKey + ',';
       }
-      this.uploadedfileKey = this.uploadedfileKey + model.fileKey;
+      this.uploadedfileKey = this.uploadedfileKey + model.Item.FileKey;
     }
   }
   onCaptchaOrder(): void {
@@ -123,9 +122,10 @@ export class PopupComponent implements OnInit {
         const startDate = new Date();
         const endDate = new Date(next.Item.Expire);
         const seconds = (endDate.getTime() - startDate.getTime());
-        setTimeout(() => {
-          this.onCaptchaOrder();
-        }, seconds);
+        if (this.aoutoCaptchaOrder < 10) {
+          this.aoutoCaptchaOrder = this.aoutoCaptchaOrder + 1;
+          setTimeout(() => { this.onCaptchaOrder(); }, seconds);
+        }
       },
       () => {
         this.message = 'خطا در دریافت عکس کپچا';
@@ -208,7 +208,7 @@ export class PopupComponent implements OnInit {
     this.modelTargetSetResponceSetDescription = new LinkManagementTargetShortLinkSetResponceModel();
     this.modelTargetGetResponce = new LinkManagementTargetShortLinkGetResponceModel();
     this.modelTargetSetDto.UrlAddress = '';
-    this.modelTargetSetDto.UploadFileKey = '';
+    this.modelTargetSetDto.UploadFileGUID = '';
 
     this.linkManagementTargetService
       .ServiceShortLinkSet(this.modelTargetSetDto)
