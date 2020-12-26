@@ -2,10 +2,11 @@
   "manifest_version": 2,
   "name": "qwp",
   "short_name": "qwp",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "quick website page / short link",
   "permissions": [
     "*://apicms.ir/*",
+    "*://apifile.ir/*",
     "activeTab"
   ],
   "browser_action": {

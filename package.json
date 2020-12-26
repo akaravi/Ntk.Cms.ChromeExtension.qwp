@@ -31,7 +31,7 @@
     "@flowjs/flow.js": "^2.14.1",
     "@flowjs/ngx-flow": "^0.4.5",
     "core-js": "^2.6.11",
-    "ntk-cms-api": "^1.0.101",
+    "ntk-cms-api": "^1.0.102",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
     "zone.js": "^0.10.3"
